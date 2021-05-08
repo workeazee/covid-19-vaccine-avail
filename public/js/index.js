@@ -5,7 +5,7 @@ $(document).ready(function () {
   callApi();
   window.setInterval(function () {
     callApi();
-  }, 3750);
+  }, 4000);
 
   $("#reset_all").on("click", function (e) {
     $(".filters-list .filter").removeClass("selected");
@@ -72,10 +72,13 @@ $(document).ready(function () {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
+        $("#error").hide();
         var response = jQuery.parseJSON(this.responseText);
         responseData = response;
         populateData(response);
         return response;
+      } else {
+        $("#error").show();
       }
     };
     xhttp.open(
