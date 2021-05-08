@@ -69,7 +69,6 @@ body > div {
 
 #filters .filters-list > div {
   margin: 0 10px;
-  flex: auto;
 }
 
 #filters .filter {
@@ -161,6 +160,6 @@ footer {
   }
 
   #filters .filters-list > div {
-    margin: 0 5px;
+    margin: 3px 5px;
   }
 }

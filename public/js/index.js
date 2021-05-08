@@ -5,27 +5,16 @@ $(document).ready(function () {
   callApi();
   window.setInterval(function () {
     callApi();
-  }, 10000);
+  }, 3750);
 
-  $("#reset_available").on("click", function (e) {
-    $(".availability-filters .filter").removeClass("selected");
+  $("#reset_all").on("click", function (e) {
+    $(".filters-list .filter").removeClass("selected");
     populateData(responseData);
   });
   $("#filter_available").on("click", function (e) {
     if ($("#filter_available").hasClass("selected"))
       $("#filter_available").removeClass("selected");
     else $("#filter_available").addClass("selected");
-    populateData(responseData);
-  });
-  $("#filter_not_available").on("click", function (e) {
-    if ($("#filter_not_available").hasClass("selected"))
-      $("#filter_not_available").removeClass("selected");
-    else $("#filter_not_available").addClass("selected");
-    populateData(responseData);
-  });
-
-  $("#reset_vaccine").on("click", function (e) {
-    $(".vaccine-filters .filter").removeClass("selected");
     populateData(responseData);
   });
   $("#filter_covaxin").on("click", function (e) {
@@ -40,11 +29,6 @@ $(document).ready(function () {
     else $("#filter_covishield").addClass("selected");
     populateData(responseData);
   });
-
-  $("#reset_fees").on("click", function (e) {
-    $(".fees-filters .filter").removeClass("selected");
-    populateData(responseData);
-  });
   $("#filter_free").on("click", function (e) {
     if ($("#filter_free").hasClass("selected"))
       $("#filter_free").removeClass("selected");
@@ -55,11 +39,6 @@ $(document).ready(function () {
     if ($("#filter_paid").hasClass("selected"))
       $("#filter_paid").removeClass("selected");
     else $("#filter_paid").addClass("selected");
-    populateData(responseData);
-  });
-
-  $("#reset_age").on("click", function (e) {
-    $(".age-filters .filter").removeClass("selected");
     populateData(responseData);
   });
   $("#filter_18plus").on("click", function (e) {
@@ -119,47 +98,21 @@ $(document).ready(function () {
   function checkForFilters(item) {
     var availabilityFlag = true;
     var vaccineFlag = true;
-    var fessFlag = true;
+    var feesFlag = true;
     var ageFlag = true;
-    if ($(".availability-filters .filter").hasClass("selected")) {
-      availabilityFlag = false;
-    }
-    if ($(".vaccine-filters .filter").hasClass("selected")) {
-      vaccineFlag = false;
-    }
-    if ($(".fees-filters .filter").hasClass("selected")) {
-      fessFlag = false;
-    }
-    if ($(".age-filters .filter").hasClass("selected")) {
-      ageFlag = false;
-    }
-    if (availabilityFlag && vaccineFlag && fessFlag && ageFlag)
-      return availabilityFlag && vaccineFlag && fessFlag && ageFlag;
+    if ($("#filter_available").hasClass("selected")) availabilityFlag = false;
+    if ($("#filter_covaxin").hasClass("selected") || $("#filter_covishield").hasClass("selected")) vaccineFlag = false;
+    if ($("#filter_free").hasClass("selected") || $("#filter_paid").hasClass("selected")) feesFlag = false;
+    if ($("#filter_18plus").hasClass("selected") ||$("#filter_45plus").hasClass("selected")) ageFlag = false;
+    
+    if (availabilityFlag && vaccineFlag && feesFlag && ageFlag)
+      return true;
 
     if ($("#filter_available").hasClass("selected")) {
       var availableSession = item.sessions.find(
         (session) => session.available_capacity > 0
       );
       if (availableSession) availabilityFlag = true;
-    }
-    if ($("#filter_not_available").hasClass("selected")) {
-      var notAvailableSession = item.sessions.filter(
-        (session) => session.available_capacity == 0
-      );
-      if (notAvailableSession.length > 0) availabilityFlag = true;
-    }
-    if (
-      $("#filter_available").hasClass("selected") &&
-      $("#filter_not_available").hasClass("selected")
-    ) {
-      var availableSession = item.sessions.find(
-        (session) => session.available_capacity > 0
-      );
-      var notAvailableSession = item.sessions.find(
-        (session) => session.available_capacity == 0
-      );
-      if (availableSession || notAvailableSession) availabilityFlag = true;
-      else availabilityFlag = false;
     }
 
     if ($("#filter_covaxin").hasClass("selected")) {
@@ -191,19 +144,19 @@ $(document).ready(function () {
     }
 
     if ($("#filter_free").hasClass("selected")) {
-      if (item.fee_type == "Free") fessFlag = true;
-      else fessFlag = false;
+      if (item.fee_type == "Free") feesFlag = true;
+      else feesFlag = false;
     }
     if ($("#filter_paid").hasClass("selected")) {
-      if (item.fee_type == "Paid") fessFlag = true;
-      else fessFlag = false;
+      if (item.fee_type == "Paid") feesFlag = true;
+      else feesFlag = false;
     }
     if (
       $("#filter_free").hasClass("selected") &&
       $("#filter_paid").hasClass("selected")
     ) {
-      if (item.fee_type == "Free" || item.fee_type == "Paid") fessFlag = true;
-      else fessFlag = false;
+      if (item.fee_type == "Free" || item.fee_type == "Paid") feesFlag = true;
+      else feesFlag = false;
     }
 
     if ($("#filter_18plus").hasClass("selected")) {
@@ -232,9 +185,8 @@ $(document).ready(function () {
       );
       if (minAge18Session || minAge45Session) ageFlag = true;
       else ageFlag = false;
-    }    
-
-    return availabilityFlag && vaccineFlag && fessFlag && ageFlag;
+    }
+    return availabilityFlag && vaccineFlag && feesFlag && ageFlag;
   }
 
   function displayInHtml(list) {
@@ -244,7 +196,6 @@ $(document).ready(function () {
       var counter = 0;
       var html = "";
       for (let item of list) {
-        console.log(checkForFilters(item));
         if (checkForFilters(item)) {
           counter++;
           var htmlCard = "<div class='card'>";
