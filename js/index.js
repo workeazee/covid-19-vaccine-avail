@@ -112,10 +112,7 @@ $(document).ready(function () {
   function populateData(response) {
     let list = [];
     for (let center of response.centers) {
-      //var sessions = center.sessions;
-      //for (let session of sessions) {
       list.push(center);
-      //}
     }
     displayInHtml(list);
   }
