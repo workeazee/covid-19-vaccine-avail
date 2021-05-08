@@ -5,7 +5,7 @@ $(document).ready(function () {
   callApi();
   window.setInterval(function () {
     callApi();
-  }, 5000);
+  }, 4500);
 
   $("#reset_available").on("click", function (e) {
     $(".availability-filters .filter").removeClass("selected");
@@ -112,10 +112,7 @@ $(document).ready(function () {
   function populateData(response) {
     let list = [];
     for (let center of response.centers) {
-      var sessions = center.sessions;
-      for (let session of sessions) {
-        list.push(center);
-      }
+      list.push(center);
     }
     displayInHtml(list);
   }
@@ -234,13 +231,16 @@ $(document).ready(function () {
       }
       resultContainer.html(html);
       $("#centers").text(counter + " centers shortlisted");
-      if (
-        resultContainer
-          .find(".card .session .available-capacity span")
-          .text() == 0
-      ) {
-        resultContainer.find(".card .heading .dot").addClass("red");
-      } else resultContainer.find(".card .heading .dot").addClass("green");
+      $(".card").each(function () {
+        var filterIfAnySessionAvailable = $(this)
+          .find(".session .available-capacity span")
+          .filter(function () {
+            return $(this).text() != "0";
+          });
+        if (filterIfAnySessionAvailable.length == 0)
+          $(this).find(".heading .dot").addClass("red");
+        else $(this).find(".heading .dot").addClass("green");
+      });
     }
   }
 });
