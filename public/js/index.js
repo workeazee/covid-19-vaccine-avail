@@ -2,6 +2,19 @@ $(document).ready(function () {
   var responseData;
   var resultContainer = $("#result");
 
+  var notificationsPermissions = false;
+  var notificationCount = 0;
+  var notificationGiven = false;
+  // Otherwise, we need to ask the user for permission
+  if ((window.Notification) && (Notification.permission !== 'denied' || Notification.permission === "default")) {
+    Notification.requestPermission(function (permission) {
+      // If the user accepts, let's create a notification
+      if (permission === "granted") {
+        notificationsPermissions = true;
+      }
+    });
+  }
+
   callApi();
   window.setInterval(function () {
     callApi();
@@ -104,12 +117,23 @@ $(document).ready(function () {
     var feesFlag = true;
     var ageFlag = true;
     if ($("#filter_available").hasClass("selected")) availabilityFlag = false;
-    if ($("#filter_covaxin").hasClass("selected") || $("#filter_covishield").hasClass("selected")) vaccineFlag = false;
-    if ($("#filter_free").hasClass("selected") || $("#filter_paid").hasClass("selected")) feesFlag = false;
-    if ($("#filter_18plus").hasClass("selected") ||$("#filter_45plus").hasClass("selected")) ageFlag = false;
-    
-    if (availabilityFlag && vaccineFlag && feesFlag && ageFlag)
-      return true;
+    if (
+      $("#filter_covaxin").hasClass("selected") ||
+      $("#filter_covishield").hasClass("selected")
+    )
+      vaccineFlag = false;
+    if (
+      $("#filter_free").hasClass("selected") ||
+      $("#filter_paid").hasClass("selected")
+    )
+      feesFlag = false;
+    if (
+      $("#filter_18plus").hasClass("selected") ||
+      $("#filter_45plus").hasClass("selected")
+    )
+      ageFlag = false;
+
+    if (availabilityFlag && vaccineFlag && feesFlag && ageFlag) return true;
 
     if ($("#filter_available").hasClass("selected")) {
       var availableSession = item.sessions.find(
@@ -198,8 +222,12 @@ $(document).ready(function () {
     } else {
       var counter = 0;
       var html = "";
+      if(notificationGiven) {
+        notificationCount++;
+      }
       for (let item of list) {
         if (checkForFilters(item)) {
+          checkForNotification(item);
           counter++;
           var htmlCard = "<div class='card'>";
           htmlCard +=
@@ -255,5 +283,21 @@ $(document).ready(function () {
         else $(this).find(".heading .dot").addClass("green");
       });
     }
+  }
+
+  function checkForNotification(item) {
+    var availableSession = item.sessions.find(
+      (session) => session.available_capacity > 0
+    );
+    var options = {
+      body: "Center: "+item.name+"\n"+item.address+","+item.block_name+","+item.pincode,
+      vibrate: [500, 250, 500, 250, 500, 250, 500, 250, 500]
+    };
+    if (availableSession && notificationsPermissions) {
+      if(notificationCount < 1) {
+        notificationGiven = true;
+        new Notification("Vaccine Center Available!", options);
+      }
+    };
   }
 });
