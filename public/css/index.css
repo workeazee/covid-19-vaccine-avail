@@ -70,12 +70,18 @@ body > div {
   margin: 0 10px;
 }
 
-#filters .filters-list > div > div {
-  padding: 2px;
+#filters .filter {
+  border: 1px solid grey;
+  background: #ffffff;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 2px 0;
 }
 
 #filters .filter.selected {
-  border-bottom: 1px solid;
+  background: #f79431;
+  color: #ffffff;
 }
 
 #result {
