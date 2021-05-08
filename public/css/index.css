@@ -59,6 +59,7 @@ body > div {
 
 #filters .filters-list {
   display: flex;
+  flex-wrap: wrap;
 }
 
 #filters .filters-list .title {
@@ -68,6 +69,7 @@ body > div {
 
 #filters .filters-list > div {
   margin: 0 10px;
+  flex: auto;
 }
 
 #filters .filter {

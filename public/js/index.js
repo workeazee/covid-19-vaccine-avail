@@ -5,30 +5,22 @@ $(document).ready(function () {
   callApi();
   window.setInterval(function () {
     callApi();
-  }, 4500);
+  }, 10000);
 
   $("#reset_available").on("click", function (e) {
     $(".availability-filters .filter").removeClass("selected");
     populateData(responseData);
   });
-
   $("#filter_available").on("click", function (e) {
     if ($("#filter_available").hasClass("selected"))
       $("#filter_available").removeClass("selected");
-    else {
-      $(".availability-filters .filter").removeClass("selected");
-      $("#filter_available").addClass("selected");
-    }
+    else $("#filter_available").addClass("selected");
     populateData(responseData);
   });
-
   $("#filter_not_available").on("click", function (e) {
     if ($("#filter_not_available").hasClass("selected"))
       $("#filter_not_available").removeClass("selected");
-    else {
-      $(".availability-filters .filter").removeClass("selected");
-      $("#filter_not_available").addClass("selected");
-    }
+    else $("#filter_not_available").addClass("selected");
     populateData(responseData);
   });
 
@@ -36,14 +28,12 @@ $(document).ready(function () {
     $(".vaccine-filters .filter").removeClass("selected");
     populateData(responseData);
   });
-
   $("#filter_covaxin").on("click", function (e) {
     if ($("#filter_covaxin").hasClass("selected"))
       $("#filter_covaxin").removeClass("selected");
     else $("#filter_covaxin").addClass("selected");
     populateData(responseData);
   });
-
   $("#filter_covishield").on("click", function (e) {
     if ($("#filter_covishield").hasClass("selected"))
       $("#filter_covishield").removeClass("selected");
@@ -55,24 +45,33 @@ $(document).ready(function () {
     $(".fees-filters .filter").removeClass("selected");
     populateData(responseData);
   });
-
   $("#filter_free").on("click", function (e) {
     if ($("#filter_free").hasClass("selected"))
       $("#filter_free").removeClass("selected");
-    else {
-      $(".fees-filters .filter").removeClass("selected");
-      $("#filter_free").addClass("selected");
-    }
+    else $("#filter_free").addClass("selected");
     populateData(responseData);
   });
-
   $("#filter_paid").on("click", function (e) {
     if ($("#filter_paid").hasClass("selected"))
       $("#filter_paid").removeClass("selected");
-    else {
-      $(".fees-filters .filter").removeClass("selected");
-      $("#filter_paid").addClass("selected");
-    }
+    else $("#filter_paid").addClass("selected");
+    populateData(responseData);
+  });
+
+  $("#reset_age").on("click", function (e) {
+    $(".age-filters .filter").removeClass("selected");
+    populateData(responseData);
+  });
+  $("#filter_18plus").on("click", function (e) {
+    if ($("#filter_18plus").hasClass("selected"))
+      $("#filter_18plus").removeClass("selected");
+    else $("#filter_18plus").addClass("selected");
+    populateData(responseData);
+  });
+  $("#filter_45plus").on("click", function (e) {
+    if ($("#filter_45plus").hasClass("selected"))
+      $("#filter_45plus").removeClass("selected");
+    else $("#filter_45plus").addClass("selected");
     populateData(responseData);
   });
 
@@ -118,43 +117,64 @@ $(document).ready(function () {
   }
 
   function checkForFilters(item) {
-    var flag1 = true;
-    var flag2 = true;
-    var flag3 = true;
+    var availabilityFlag = true;
+    var vaccineFlag = true;
+    var fessFlag = true;
+    var ageFlag = true;
     if ($(".availability-filters .filter").hasClass("selected")) {
-      flag1 = false;
+      availabilityFlag = false;
     }
     if ($(".vaccine-filters .filter").hasClass("selected")) {
-      flag2 = false;
+      vaccineFlag = false;
     }
     if ($(".fees-filters .filter").hasClass("selected")) {
-      flag3 = false;
+      fessFlag = false;
     }
-    if (flag1 && flag2 && flag3) return flag1 && flag2 && flag3;
+    if ($(".age-filters .filter").hasClass("selected")) {
+      ageFlag = false;
+    }
+    if (availabilityFlag && vaccineFlag && fessFlag && ageFlag)
+      return availabilityFlag && vaccineFlag && fessFlag && ageFlag;
+
     if ($("#filter_available").hasClass("selected")) {
       var availableSession = item.sessions.find(
         (session) => session.available_capacity > 0
       );
-      if (availableSession) flag1 = true;
-    } else if ($("#filter_not_available").hasClass("selected")) {
+      if (availableSession) availabilityFlag = true;
+    }
+    if ($("#filter_not_available").hasClass("selected")) {
       var notAvailableSession = item.sessions.filter(
         (session) => session.available_capacity == 0
       );
-      if (notAvailableSession.length > 0) flag1 = true;
+      if (notAvailableSession.length > 0) availabilityFlag = true;
     }
+    if (
+      $("#filter_available").hasClass("selected") &&
+      $("#filter_not_available").hasClass("selected")
+    ) {
+      var availableSession = item.sessions.find(
+        (session) => session.available_capacity > 0
+      );
+      var notAvailableSession = item.sessions.find(
+        (session) => session.available_capacity == 0
+      );
+      if (availableSession || notAvailableSession) availabilityFlag = true;
+      else availabilityFlag = false;
+    }
+
     if ($("#filter_covaxin").hasClass("selected")) {
       var covaxinSession = item.sessions.find(
         (session) => session.vaccine == "COVAXIN"
       );
-      if (covaxinSession) flag2 = true;
-      else flag2 = false;
+      if (covaxinSession) vaccineFlag = true;
+      else vaccineFlag = false;
     }
     if ($("#filter_covishield").hasClass("selected")) {
       var covishieldSession = item.sessions.find(
         (session) => session.vaccine == "COVISHIELD"
       );
-      if (covishieldSession) flag2 = true;
-      else flag2 = false;
+      if (covishieldSession) vaccineFlag = true;
+      else vaccineFlag = false;
     }
     if (
       $("#filter_covaxin").hasClass("selected") &&
@@ -166,17 +186,55 @@ $(document).ready(function () {
       var covishieldSession = item.sessions.find(
         (session) => session.vaccine == "COVISHIELD"
       );
-      if (covaxinSession || covishieldSession) flag2 = true;
-      else flag2 = false;
+      if (covaxinSession || covishieldSession) vaccineFlag = true;
+      else vaccineFlag = false;
     }
+
     if ($("#filter_free").hasClass("selected")) {
-      if (item.fee_type == "Free") flag3 = true;
-      else flag3 = false;
-    } else if ($("#filter_paid").hasClass("selected")) {
-      if (item.fee_type == "Paid") flag3 = true;
-      else flag3 = false;
+      if (item.fee_type == "Free") fessFlag = true;
+      else fessFlag = false;
     }
-    return flag1 && flag2 && flag3;
+    if ($("#filter_paid").hasClass("selected")) {
+      if (item.fee_type == "Paid") fessFlag = true;
+      else fessFlag = false;
+    }
+    if (
+      $("#filter_free").hasClass("selected") &&
+      $("#filter_paid").hasClass("selected")
+    ) {
+      if (item.fee_type == "Free" || item.fee_type == "Paid") fessFlag = true;
+      else fessFlag = false;
+    }
+
+    if ($("#filter_18plus").hasClass("selected")) {
+      var minAge18Session = item.sessions.find(
+        (session) => session.min_age_limit == 18
+      );
+      if (minAge18Session) ageFlag = true;
+      else ageFlag = false;
+    }
+    if ($("#filter_45plus").hasClass("selected")) {
+      var minAge45Session = item.sessions.find(
+        (session) => session.min_age_limit == 45
+      );
+      if (minAge45Session) ageFlag = true;
+      else ageFlag = false;
+    }
+    if (
+      $("#filter_18plus").hasClass("selected") &&
+      $("#filter_45plus").hasClass("selected")
+    ) {
+      var minAge18Session = item.sessions.find(
+        (session) => session.min_age_limit == 18
+      );
+      var minAge45Session = item.sessions.find(
+        (session) => session.min_age_limit == 45
+      );
+      if (minAge18Session || minAge45Session) ageFlag = true;
+      else ageFlag = false;
+    }    
+
+    return availabilityFlag && vaccineFlag && fessFlag && ageFlag;
   }
 
   function displayInHtml(list) {
@@ -186,6 +244,7 @@ $(document).ready(function () {
       var counter = 0;
       var html = "";
       for (let item of list) {
+        console.log(checkForFilters(item));
         if (checkForFilters(item)) {
           counter++;
           var htmlCard = "<div class='card'>";
