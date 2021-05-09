@@ -41,8 +41,23 @@ body > div {
   flex-wrap: wrap;
 }
 
-#legend .legend-item.date {
+#legend .legend-item#date {
   float: right;
+}
+
+.legend-item#notification_enable_disable {
+  float: right;
+  border: 1px solid grey;
+  background: #ffffff;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 2px 0;
+}
+
+.legend-item#notification_enable_disable.selected {
+  background: #f79431;
+  color: #ffffff;
 }
 
 #legend > div {

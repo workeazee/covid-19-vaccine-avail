@@ -4,21 +4,49 @@ $(document).ready(function () {
 
   var notificationsPermissions = false;
   var notificationCount = 0;
-  var notificationGiven = false;
+  var notificationGivenInOneCall = false;
   // Otherwise, we need to ask the user for permission
-  if ((window.Notification) && (Notification.permission !== 'denied' || Notification.permission === "default")) {
+  if (
+    window.Notification &&
+    (Notification.permission !== "denied" ||
+      Notification.permission === "default")
+  ) {
     Notification.requestPermission(function (permission) {
       // If the user accepts, let's create a notification
       if (permission === "granted") {
         notificationsPermissions = true;
+        $("#notification_enable_disable").addClass("selected");
+        $("#notification_enable_disable").text("Disable notifications");
+      } else {
+        $("#notification_enable_disable").removeClass("selected");
+        $("#notification_enable_disable").text("Enable notifications");
       }
     });
   }
+
+  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (isMobile) $("#notification_enable_disable").remove();
 
   callApi();
   window.setInterval(function () {
     callApi();
   }, 4000);
+  window.setInterval(function () {
+    notificationCount = 0;
+    notificationGivenInOneCall = false;
+  }, 60000);
+
+  $("#notification_enable_disable").on("click", function (e) {
+    if ($("#notification_enable_disable").hasClass("selected")) {
+      notificationsPermissions = false;
+      $("#notification_enable_disable").removeClass("selected");
+      $("#notification_enable_disable").text("Enable notifications");
+    } else {
+      notificationsPermissions = true;
+      $("#notification_enable_disable").addClass("selected");
+      $("#notification_enable_disable").text("Disable notifications");
+    }
+  });
 
   $("#reset_all").on("click", function (e) {
     $(".filters-list .filter").removeClass("selected");
@@ -81,7 +109,7 @@ $(document).ready(function () {
       today.getMinutes() +
       ":" +
       today.getSeconds();
-    $(".legend-item.date").text("Updated On: " + date);
+    $(".legend-item#date").text("Updated On: " + date);
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
@@ -222,7 +250,7 @@ $(document).ready(function () {
     } else {
       var counter = 0;
       var html = "";
-      if(notificationGiven) {
+      if (notificationGivenInOneCall) {
         notificationCount++;
       }
       for (let item of list) {
@@ -290,14 +318,32 @@ $(document).ready(function () {
       (session) => session.available_capacity > 0
     );
     var options = {
-      body: "Center: "+item.name+"\n"+item.address+","+item.block_name+","+item.pincode,
-      vibrate: [500, 250, 500, 250, 500, 250, 500, 250, 500]
+      body:
+        "Center: " +
+        item.name +
+        "\n" +
+        item.address +
+        "," +
+        item.block_name +
+        "," +
+        item.pincode,
+      vibrate: [500, 250, 500, 250, 500, 250, 500, 250, 500],
     };
     if (availableSession && notificationsPermissions) {
-      if(notificationCount < 1) {
-        notificationGiven = true;
-        new Notification("Vaccine Center Available!", options);
+      if (notificationCount < 1) {
+        notificationGivenInOneCall = true;
+        var notification = new Notification(
+          "Vaccine Center Available!",
+          options
+        );
+        notification.onclick = function (event) {
+          event.preventDefault(); // prevent the browser from focusing the Notification's tab
+          window.open(
+            "https://covid-19-vaccine-availability.web.app/",
+            "_blank"
+          );
+        };
       }
-    };
+    }
   }
 });
