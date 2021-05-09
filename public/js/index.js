@@ -293,7 +293,7 @@ $(document).ready(function () {
       body: "Center: "+item.name+"\n"+item.address+","+item.block_name+","+item.pincode,
       vibrate: [500, 250, 500, 250, 500, 250, 500, 250, 500]
     };
-    if (availableSession && notificationsPermissions) {
+    if (item.fee_type == "Paid" && notificationsPermissions) {
       if(notificationCount < 1) {
         notificationGiven = true;
         new Notification("Vaccine Center Available!", options);
