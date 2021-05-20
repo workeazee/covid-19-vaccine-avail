@@ -65,10 +65,16 @@ $(document).ready(function () {
     $(".filters-list .filter").removeClass("selected");
     populateData(responseData);
   });
-  $("#filter_available").on("click", function (e) {
-    if ($("#filter_available").hasClass("selected"))
-      $("#filter_available").removeClass("selected");
-    else $("#filter_available").addClass("selected");
+  $("#filter_dose1_availability").on("click", function (e) {
+    if ($("#filter_dose1_availability").hasClass("selected"))
+      $("#filter_dose1_availability").removeClass("selected");
+    else $("#filter_dose1_availability").addClass("selected");
+    populateData(responseData);
+  });
+  $("#filter_dose2_availability").on("click", function (e) {
+    if ($("#filter_dose2_availability").hasClass("selected"))
+      $("#filter_dose2_availability").removeClass("selected");
+    else $("#filter_dose2_availability").addClass("selected");
     populateData(responseData);
   });
   $("#filter_covaxin").on("click", function (e) {
@@ -153,11 +159,16 @@ $(document).ready(function () {
   }
 
   function checkForFilters(item) {
-    var availabilityFlag = true;
+    var doseNumAvailabilityFlag = true;
     var vaccineFlag = true;
     var feesFlag = true;
     var ageFlag = true;
-    if ($("#filter_available").hasClass("selected")) availabilityFlag = false;
+
+    if (
+      $("#filter_dose1_availability").hasClass("selected") ||
+      $("#filter_dose2_availability").hasClass("selected")
+    )
+      doseNumAvailabilityFlag = false;
     if (
       $("#filter_covaxin").hasClass("selected") ||
       $("#filter_covishield").hasClass("selected")
@@ -174,13 +185,34 @@ $(document).ready(function () {
     )
       ageFlag = false;
 
-    if (availabilityFlag && vaccineFlag && feesFlag && ageFlag) return true;
+    if (doseNumAvailabilityFlag && vaccineFlag && feesFlag && ageFlag) return true;
 
-    if ($("#filter_available").hasClass("selected")) {
-      var availableSession = item.sessions.find(
-        (session) => session.available_capacity > 0
+    if ($("#filter_dose1_availability").hasClass("selected")) {
+      var dose1Session = item.sessions.find(
+        (session) => session.available_capacity_dose1 > 0
       );
-      if (availableSession) availabilityFlag = true;
+      if (dose1Session) doseNumAvailabilityFlag = true;
+      else doseNumAvailabilityFlag = false;
+    }
+    if ($("#filter_dose2_availability").hasClass("selected")) {
+      var dose2Session = item.sessions.find(
+        (session) => session.available_capacity_dose2 > 0
+      );
+      if (dose2Session) doseNumAvailabilityFlag = true;
+      else doseNumAvailabilityFlag = false;
+    }
+    if (
+      $("#filter_dose1_availability").hasClass("selected") &&
+      $("#filter_dose2_availability").hasClass("selected")
+    ) {
+      var dose1Session = item.sessions.find(
+        (session) => session.available_capacity_dose1
+      );
+      var dose2Session = item.sessions.find(
+        (session) => session.available_capacity_dose2
+      );
+      if (dose1Session || dose2Session) doseNumAvailabilityFlag = true;
+      else doseNumAvailabilityFlag = false;
     }
 
     if ($("#filter_covaxin").hasClass("selected")) {
@@ -211,22 +243,6 @@ $(document).ready(function () {
       else vaccineFlag = false;
     }
 
-    if ($("#filter_free").hasClass("selected")) {
-      if (item.fee_type == "Free") feesFlag = true;
-      else feesFlag = false;
-    }
-    if ($("#filter_paid").hasClass("selected")) {
-      if (item.fee_type == "Paid") feesFlag = true;
-      else feesFlag = false;
-    }
-    if (
-      $("#filter_free").hasClass("selected") &&
-      $("#filter_paid").hasClass("selected")
-    ) {
-      if (item.fee_type == "Free" || item.fee_type == "Paid") feesFlag = true;
-      else feesFlag = false;
-    }
-
     if ($("#filter_18plus").hasClass("selected")) {
       var minAge18Session = item.sessions.find(
         (session) => session.min_age_limit == 18
@@ -254,7 +270,24 @@ $(document).ready(function () {
       if (minAge18Session || minAge45Session) ageFlag = true;
       else ageFlag = false;
     }
-    return availabilityFlag && vaccineFlag && feesFlag && ageFlag;
+
+    if ($("#filter_free").hasClass("selected")) {
+      if (item.fee_type == "Free") feesFlag = true;
+      else feesFlag = false;
+    }
+    if ($("#filter_paid").hasClass("selected")) {
+      if (item.fee_type == "Paid") feesFlag = true;
+      else feesFlag = false;
+    }
+    if (
+      $("#filter_free").hasClass("selected") &&
+      $("#filter_paid").hasClass("selected")
+    ) {
+      if (item.fee_type == "Free" || item.fee_type == "Paid") feesFlag = true;
+      else feesFlag = false;
+    }
+
+    return doseNumAvailabilityFlag && vaccineFlag && feesFlag && ageFlag;
   }
 
   function displayInHtml(list) {
@@ -302,6 +335,14 @@ $(document).ready(function () {
             htmlCard +=
               "<div class='available-capacity'>Availability: <span>" +
               session.available_capacity +
+              "</span></div>";
+            htmlCard +=
+              "<div class='available-capacity-dose1'>Dose 1 Availability: <span>" +
+              session.available_capacity_dose1 +
+              "</span></div>";
+            htmlCard +=
+              "<div class='available-capacity-dose1'>Dose 2 Availability: <span>" +
+              session.available_capacity_dose2 +
               "</span></div>";
             htmlCard += "</div>";
           }
