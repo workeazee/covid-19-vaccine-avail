@@ -45,17 +45,17 @@ body > div {
   float: right;
 }
 
-.legend-item#notification_enable_disable {
+.legend-item.notification_enable_disable {
   float: right;
   border: 1px solid grey;
   background: #ffffff;
-  padding: 5px 8px;
+  padding: 5px 10px !important;
   cursor: pointer;
   border-radius: 5px;
-  margin: 2px 0;
+  margin: 2px;
 }
 
-.legend-item#notification_enable_disable.selected {
+.legend-item.notification_enable_disable.selected {
   background: #f79431;
   color: #ffffff;
 }

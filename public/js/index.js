@@ -2,7 +2,8 @@ $(document).ready(function () {
   var responseData;
   var resultContainer = $("#result");
 
-  var notificationsPermissions = false;
+  var notificationsPermissionsDose1 = false;
+  var notificationsPermissionsDose2 = false;
   var notificationCount = 0;
   var notificationGivenInOneCall = false;
   // Otherwise, we need to ask the user for permission
@@ -14,18 +15,26 @@ $(document).ready(function () {
     Notification.requestPermission(function (permission) {
       // If the user accepts, let's create a notification
       if (permission === "granted") {
-        notificationsPermissions = true;
-        $("#notification_enable_disable").addClass("selected");
-        $("#notification_enable_disable").text("Disable notifications");
+        notificationsPermissionsDose1 = true;
+        notificationsPermissionsDose2 = true;
+        $("#notification_enable_disable_dose1").addClass("selected");
+        $("#notification_enable_disable_dose2").addClass("selected");
+        $("#notification_enable_disable_dose1").text("Disable notifications for dose 1");
+        $("#notification_enable_disable_dose2").text("Disable notifications for dose 2");
       } else {
-        $("#notification_enable_disable").removeClass("selected");
-        $("#notification_enable_disable").text("Enable notifications");
+        $("#notification_enable_disable_dose1").removeClass("selected");
+        $("#notification_enable_disable_dose2").removeClass("selected");
+        $("#notification_enable_disable_dose1").text("Enable notifications for dose 1");
+        $("#notification_enable_disable_dose2").text("Enable notifications for dose 2");
       }
     });
   }
 
   var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if (isMobile) $("#notification_enable_disable").remove();
+  if (isMobile) {
+    $("#notification_enable_disable_dose1").remove();
+    $("#notification_enable_disable_dose2").remove();
+  }
 
   callApi();
   window.setInterval(function () {
@@ -36,28 +45,61 @@ $(document).ready(function () {
     notificationGivenInOneCall = false;
   }, 60000);
 
-  $("#notification_enable_disable").on("click", function (e) {
-    if ($("#notification_enable_disable").hasClass("selected")) {
-      notificationsPermissions = false;
-      $("#notification_enable_disable").removeClass("selected");
-      $("#notification_enable_disable").text("Enable notifications");
+  $("#notification_enable_disable_dose1").on("click", function (e) {
+    if ($("#notification_enable_disable_dose1").hasClass("selected")) {
+      notificationsPermissionsDose1 = false;
+      $("#notification_enable_disable_dose1").removeClass("selected");
+      $("#notification_enable_disable_dose1").text("Enable notifications for dose 1");
     } else {
       if (window.Notification && Notification.permission !== "granted") {
         Notification.requestPermission(function (permission) {
           // If the user accepts, let's create a notification
           if (permission === "granted") {
-            notificationsPermissions = true;
-            $("#notification_enable_disable").addClass("selected");
-            $("#notification_enable_disable").text("Disable notifications");
+            notificationsPermissionsDose1 = true;
+            notificationCount = 0;
+            notificationGivenInOneCall = false;
+            $("#notification_enable_disable_dose1").addClass("selected");
+            $("#notification_enable_disable_dose1").text("Disable notifications for dose 1");
           } else {
-            $("#notification_enable_disable").removeClass("selected");
-            $("#notification_enable_disable").text("Enable notifications");
+            $("#notification_enable_disable_dose1").removeClass("selected");
+            $("#notification_enable_disable_dose1").text("Enable notifications for dose 1");
           }
         });
       } else if (window.Notification && Notification.permission === "granted")
-        notificationsPermissions = true;
-      $("#notification_enable_disable").addClass("selected");
-      $("#notification_enable_disable").text("Disable notifications");
+        notificationsPermissionsDose1 = true;
+        notificationCount = 0;
+        notificationGivenInOneCall = false;
+      $("#notification_enable_disable_dose1").addClass("selected");
+      $("#notification_enable_disable_dose1").text("Disable notifications for dose 1");
+    }
+  });
+
+  $("#notification_enable_disable_dose2").on("click", function (e) {
+    if ($("#notification_enable_disable_dose2").hasClass("selected")) {
+      notificationsPermissionsDose2 = false;
+      $("#notification_enable_disable_dose2").removeClass("selected");
+      $("#notification_enable_disable_dose2").text("Enable notifications for dose 2");
+    } else {
+      if (window.Notification && Notification.permission !== "granted") {
+        Notification.requestPermission(function (permission) {
+          // If the user accepts, let's create a notification
+          if (permission === "granted") {
+            notificationsPermissionsDose2 = true;
+            notificationCount = 0;
+            notificationGivenInOneCall = false;
+            $("#notification_enable_disable_dose2").addClass("selected");
+            $("#notification_enable_disable_dose2").text("Disable notifications for dose 2");
+          } else {
+            $("#notification_enable_disable_dose2").removeClass("selected");
+            $("#notification_enable_disable_dose2").text("Enable notifications for dose 2");
+          }
+        });
+      } else if (window.Notification && Notification.permission === "granted")
+        notificationsPermissionsDose2 = true;
+        notificationCount = 0;
+        notificationGivenInOneCall = false;
+      $("#notification_enable_disable_dose2").addClass("selected");
+      $("#notification_enable_disable_dose2").text("Disable notifications for dose 2");
     }
   });
 
@@ -368,9 +410,13 @@ $(document).ready(function () {
   }
 
   function checkForNotification(item) {
-    var availableSession = item.sessions.find(
-      (session) => session.available_capacity > 0
+    var dose1SessionAvailable = item.sessions.find(
+      (session) => session.available_capacity_dose1 > 0
     );
+    var dose2SessionAvailable = item.sessions.find(
+      (session) => session.available_capacity_dose2 > 0
+    );
+    
     var options = {
       body:
         "Center: " +
@@ -383,7 +429,25 @@ $(document).ready(function () {
         item.pincode,
       vibrate: [500, 250, 500, 250, 500, 250, 500, 250, 500],
     };
-    if (availableSession && notificationsPermissions) {
+
+    if (dose1SessionAvailable && notificationsPermissionsDose1) {
+      if (notificationCount < 1) {
+        notificationGivenInOneCall = true;
+        var notification = new Notification(
+          "Vaccine Center Available!",
+          options
+        );
+        notification.onclick = function (event) {
+          event.preventDefault(); // prevent the browser from focusing the Notification's tab
+          window.open(
+            "https://covid-19-vaccine-availability.web.app/",
+            "_blank"
+          );
+        };
+      }
+    }
+
+    if (dose2SessionAvailable && notificationsPermissionsDose2) {
       if (notificationCount < 1) {
         notificationGivenInOneCall = true;
         var notification = new Notification(
