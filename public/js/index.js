@@ -24,6 +24,7 @@ $(document).ready(function () {
 
     $( "#selected-location" ).autocomplete({
       select: function(event, ui) {
+        $(event.target).blur();
         localStorage.setItem('lastOpenedLocation', ui.item.value);
         localStorage.setItem('url', urls[locations.indexOf(ui.item.value)]);
         location = localStorage.getItem('lastOpenedLocation');
