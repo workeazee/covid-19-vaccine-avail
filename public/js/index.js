@@ -11,26 +11,25 @@ $(document).ready(function () {
     location = localStorage.getItem('lastOpenedLocation');
     url = localStorage.getItem('url');
   }
-
   $("#selected-location").val(location);
   $("#selected-location")
     .autocomplete({
       source: locations,
       minLength: 0,
-    })
-    .focus(function () {
-      $(this).autocomplete("search", '');
-    });
-
-    $( "#selected-location" ).autocomplete({
       select: function(event, ui) {
-        $(event.target).blur();
+        $('html, body').animate({
+          scrollTop: $("#last-updated-date-time").offset().top
+        }, 1000);
         localStorage.setItem('lastOpenedLocation', ui.item.value);
         localStorage.setItem('url', urls[locations.indexOf(ui.item.value)]);
         location = localStorage.getItem('lastOpenedLocation');
         url = localStorage.getItem('url');
+        $("#selected-location").val(location);
         callApi();
       }
+    })
+    .focus(function (event, ui) {
+      $(this).autocomplete("search", '');
     });
 
   var notificationsPermissionsDose1 = false;
