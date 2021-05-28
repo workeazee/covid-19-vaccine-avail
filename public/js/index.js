@@ -2,6 +2,37 @@ $(document).ready(function () {
   var responseData;
   var resultContainer = $("#result");
 
+  var location = localStorage.getItem('lastOpenedLocation');
+  var url = localStorage.getItem('url');
+
+  if(!location || !url) {
+    localStorage.setItem('lastOpenedLocation', locations[0]);
+    localStorage.setItem('url', urls[0]);
+    location = localStorage.getItem('lastOpenedLocation');
+    url = localStorage.getItem('url');
+  }
+
+  $("#selected-location").val(location);
+  $("#selected-location")
+    .autocomplete({
+      source: locations,
+      minLength: 0,
+    })
+    .focus(function () {
+      $(this).autocomplete("search", '');
+    });
+
+    $( "#selected-location" ).autocomplete({
+      select: function(event, ui) {
+        $(event.target).blur();
+        localStorage.setItem('lastOpenedLocation', ui.item.value);
+        localStorage.setItem('url', urls[locations.indexOf(ui.item.value)]);
+        location = localStorage.getItem('lastOpenedLocation');
+        url = localStorage.getItem('url');
+        callApi();
+      }
+    });
+
   var notificationsPermissionsDose1 = false;
   var notificationsPermissionsDose2 = false;
   var notificationCount = 0;
@@ -130,7 +161,7 @@ $(document).ready(function () {
       today.getMinutes() +
       ":" +
       today.getSeconds();
-    $(".legend-item#date").text("Updated On: " + date);
+    $("#last-updated-date-time span").text("Updated On: " + date);
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
@@ -143,12 +174,7 @@ $(document).ready(function () {
         $("#error").show();
       }
     };
-    xhttp.open(
-      "GET",
-      "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id=392&date=" +
-        date.substring(0, date.indexOf(" ")),
-      true
-    );
+    xhttp.open("GET", url + date.substring(0, date.indexOf(" ")), true);
     xhttp.send();
   }
 

@@ -36,13 +36,26 @@ body > div {
   padding: 12px;
 }
 
+#location {
+  text-align: center;
+  font-weight: 600;
+}
+
+#location .input-location #selected-location{
+  text-align: center;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+}
+
+#last-updated-date-time span{
+  float: right;
+}
+
 #legend .legend-item {
   display: flex;
   flex-wrap: wrap;
-}
-
-#legend .legend-item#date {
-  float: right;
 }
 
 .legend-item.notification_enable_disable {
@@ -61,7 +74,7 @@ body > div {
 }
 
 #legend > div {
-  padding: 2px;
+  margin: 2px;
 }
 
 #legend .legend-item > div {
@@ -72,7 +85,7 @@ body > div {
   border-bottom: 1px solid;
 }
 
-#filters .filters-list {
+.filters-list {
   display: flex;
   flex-wrap: wrap;
   margin: 10px 0;
@@ -123,6 +136,11 @@ body > div {
   border-radius: 10px;
   box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2),
     0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
+}
+
+.card:hover {
+  text-decoration: none;
+  color: #000000;
 }
 
 .card .heading {
