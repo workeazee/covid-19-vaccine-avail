@@ -103,56 +103,16 @@ $(document).ready(function () {
     }
   });
 
+  $('.filter').on("click", function (e) {
+    e.preventDefault();
+    if ($(this).hasClass("selected"))
+      $(this).removeClass("selected");
+    else $(this).addClass("selected");
+    populateData(responseData);
+  });
+
   $("#reset_all").on("click", function (e) {
     $(".filters-list .filter").removeClass("selected");
-    populateData(responseData);
-  });
-  $("#filter_dose1_availability").on("click", function (e) {
-    if ($("#filter_dose1_availability").hasClass("selected"))
-      $("#filter_dose1_availability").removeClass("selected");
-    else $("#filter_dose1_availability").addClass("selected");
-    populateData(responseData);
-  });
-  $("#filter_dose2_availability").on("click", function (e) {
-    if ($("#filter_dose2_availability").hasClass("selected"))
-      $("#filter_dose2_availability").removeClass("selected");
-    else $("#filter_dose2_availability").addClass("selected");
-    populateData(responseData);
-  });
-  $("#filter_covaxin").on("click", function (e) {
-    if ($("#filter_covaxin").hasClass("selected"))
-      $("#filter_covaxin").removeClass("selected");
-    else $("#filter_covaxin").addClass("selected");
-    populateData(responseData);
-  });
-  $("#filter_covishield").on("click", function (e) {
-    if ($("#filter_covishield").hasClass("selected"))
-      $("#filter_covishield").removeClass("selected");
-    else $("#filter_covishield").addClass("selected");
-    populateData(responseData);
-  });
-  $("#filter_free").on("click", function (e) {
-    if ($("#filter_free").hasClass("selected"))
-      $("#filter_free").removeClass("selected");
-    else $("#filter_free").addClass("selected");
-    populateData(responseData);
-  });
-  $("#filter_paid").on("click", function (e) {
-    if ($("#filter_paid").hasClass("selected"))
-      $("#filter_paid").removeClass("selected");
-    else $("#filter_paid").addClass("selected");
-    populateData(responseData);
-  });
-  $("#filter_18plus").on("click", function (e) {
-    if ($("#filter_18plus").hasClass("selected"))
-      $("#filter_18plus").removeClass("selected");
-    else $("#filter_18plus").addClass("selected");
-    populateData(responseData);
-  });
-  $("#filter_45plus").on("click", function (e) {
-    if ($("#filter_45plus").hasClass("selected"))
-      $("#filter_45plus").removeClass("selected");
-    else $("#filter_45plus").addClass("selected");
     populateData(responseData);
   });
 
@@ -200,7 +160,7 @@ $(document).ready(function () {
     displayInHtml(list);
   }
 
-  function checkForFilters(item) {
+  function checkForFilters() {
     var doseNumAvailabilityFlag = true;
     var vaccineFlag = true;
     var feesFlag = true;
@@ -229,107 +189,82 @@ $(document).ready(function () {
 
     if (doseNumAvailabilityFlag && vaccineFlag && feesFlag && ageFlag) return true;
 
-    if ($("#filter_dose1_availability").hasClass("selected")) {
-      var dose1Session = item.sessions.find(
-        (session) => session.available_capacity_dose1 > 0
-      );
-      if (dose1Session) doseNumAvailabilityFlag = true;
-      else doseNumAvailabilityFlag = false;
-    }
-    if ($("#filter_dose2_availability").hasClass("selected")) {
-      var dose2Session = item.sessions.find(
-        (session) => session.available_capacity_dose2 > 0
-      );
-      if (dose2Session) doseNumAvailabilityFlag = true;
-      else doseNumAvailabilityFlag = false;
-    }
-    if (
-      $("#filter_dose1_availability").hasClass("selected") &&
-      $("#filter_dose2_availability").hasClass("selected")
-    ) {
-      var dose1Session = item.sessions.find(
-        (session) => session.available_capacity_dose1
-      );
-      var dose2Session = item.sessions.find(
-        (session) => session.available_capacity_dose2
-      );
-      if (dose1Session || dose2Session) doseNumAvailabilityFlag = true;
-      else doseNumAvailabilityFlag = false;
-    }
+    var counter = 0;
+    $(".card").each(function() {
+      var doseNumAvailabilityFlag = true;
+      var vaccineFlag = true;
+      var feesFlag = true;
+      var ageFlag = true;
+      if ($("#filter_dose1_availability").hasClass("selected")) {
+        if ($(this).find('.available-capacity-dose1 span').text() != '0') doseNumAvailabilityFlag = true;
+        else doseNumAvailabilityFlag = false;
+      }
+      if ($("#filter_dose2_availability").hasClass("selected")) {
+        if ($(this).find('.available-capacity-dose2 span').text() != '0') doseNumAvailabilityFlag = true;
+        else doseNumAvailabilityFlag = false;
+      }
+      if (
+        $("#filter_dose1_availability").hasClass("selected") &&
+        $("#filter_dose2_availability").hasClass("selected")
+      ) {
+        if ($(this).find('.available-capacity-dose1 span').text() != '0' || $(this).find('.available-capacity-dose2 span').text() != '0') doseNumAvailabilityFlag = true;
+        else doseNumAvailabilityFlag = false;
+      }
 
-    if ($("#filter_covaxin").hasClass("selected")) {
-      var covaxinSession = item.sessions.find(
-        (session) => session.vaccine == "COVAXIN"
-      );
-      if (covaxinSession) vaccineFlag = true;
-      else vaccineFlag = false;
-    }
-    if ($("#filter_covishield").hasClass("selected")) {
-      var covishieldSession = item.sessions.find(
-        (session) => session.vaccine == "COVISHIELD"
-      );
-      if (covishieldSession) vaccineFlag = true;
-      else vaccineFlag = false;
-    }
-    if (
-      $("#filter_covaxin").hasClass("selected") &&
-      $("#filter_covishield").hasClass("selected")
-    ) {
-      var covaxinSession = item.sessions.find(
-        (session) => session.vaccine == "COVAXIN"
-      );
-      var covishieldSession = item.sessions.find(
-        (session) => session.vaccine == "COVISHIELD"
-      );
-      if (covaxinSession || covishieldSession) vaccineFlag = true;
-      else vaccineFlag = false;
-    }
+      if ($("#filter_covaxin").hasClass("selected")) {
+        if ($(this).find('.vaccine span').text() == 'COVAXIN') vaccineFlag = true;
+        else vaccineFlag = false;
+      }
+      if ($("#filter_covishield").hasClass("selected")) {
+        if ($(this).find('.vaccine span').text() == 'COVISHIELD') vaccineFlag = true;
+        else vaccineFlag = false;
+      }
+      if (
+        $("#filter_covaxin").hasClass("selected") &&
+        $("#filter_covishield").hasClass("selected")
+      ) {
+        if ($(this).find('.vaccine span').text() == 'COVAXIN' || $(this).find('.vaccine span').text() == 'COVISHIELD') vaccineFlag = true;
+        else vaccineFlag = false;
+      }
 
-    if ($("#filter_18plus").hasClass("selected")) {
-      var minAge18Session = item.sessions.find(
-        (session) => session.min_age_limit == 18
-      );
-      if (minAge18Session) ageFlag = true;
-      else ageFlag = false;
-    }
-    if ($("#filter_45plus").hasClass("selected")) {
-      var minAge45Session = item.sessions.find(
-        (session) => session.min_age_limit == 45
-      );
-      if (minAge45Session) ageFlag = true;
-      else ageFlag = false;
-    }
-    if (
-      $("#filter_18plus").hasClass("selected") &&
-      $("#filter_45plus").hasClass("selected")
-    ) {
-      var minAge18Session = item.sessions.find(
-        (session) => session.min_age_limit == 18
-      );
-      var minAge45Session = item.sessions.find(
-        (session) => session.min_age_limit == 45
-      );
-      if (minAge18Session || minAge45Session) ageFlag = true;
-      else ageFlag = false;
-    }
+      if ($("#filter_18plus").hasClass("selected")) {
+        if ($(this).find('.min-age-limit span').text() == '18') ageFlag = true;
+        else ageFlag = false;
+      }
+      if ($("#filter_45plus").hasClass("selected")) {
+        if ($(this).find('.min-age-limit span').text() == '45') ageFlag = true;
+        else ageFlag = false;
+      }
+      if (
+        $("#filter_18plus").hasClass("selected") &&
+        $("#filter_45plus").hasClass("selected")
+      ) {
+        if ($(this).find('.min-age-limit span').text() == '18' || $(this).find('.min-age-limit span').text() == '45') ageFlag = true;
+        else ageFlag = false;
+      }
 
-    if ($("#filter_free").hasClass("selected")) {
-      if (item.fee_type == "Free") feesFlag = true;
-      else feesFlag = false;
-    }
-    if ($("#filter_paid").hasClass("selected")) {
-      if (item.fee_type == "Paid") feesFlag = true;
-      else feesFlag = false;
-    }
-    if (
-      $("#filter_free").hasClass("selected") &&
-      $("#filter_paid").hasClass("selected")
-    ) {
-      if (item.fee_type == "Free" || item.fee_type == "Paid") feesFlag = true;
-      else feesFlag = false;
-    }
+      if ($("#filter_free").hasClass("selected")) {
+        if ($(this).find('.fee-type span').text() == 'Free') feesFlag = true;
+        else feesFlag = false;
+      }
+      if ($("#filter_paid").hasClass("selected")) {
+        if ($(this).find('.fee-type span').text() == 'Paid') feesFlag = true;
+        else feesFlag = false;
+      }
+      if (
+        $("#filter_free").hasClass("selected") &&
+        $("#filter_paid").hasClass("selected")
+      ) {
+        if ($(this).find('.fee-type span').text() == 'Free' || $(this).find('.fee-type span').text() == 'Paid') feesFlag = true;
+        else feesFlag = false;
+      }
 
-    return doseNumAvailabilityFlag && vaccineFlag && feesFlag && ageFlag;
+      if(!(doseNumAvailabilityFlag && vaccineFlag && feesFlag && ageFlag)) {
+        $(this).remove();
+      }
+      else counter++;
+    });
+    $("#centers").text(counter + " centers shortlisted");
   }
 
   function displayInHtml(list) {
@@ -342,10 +277,10 @@ $(document).ready(function () {
         notificationCount++;
       }
       for (let item of list) {
-        if (checkForFilters(item)) {
-          checkForNotification(item);
+        checkForNotification(item);
+        for (let session of item.sessions) {
           counter++;
-          var htmlCard = "<div class='card'>";
+          var htmlCard = "<a class='card' href='https://selfregistration.cowin.gov.in/' target='_blank'>";
           htmlCard +=
             "<div class='heading'><div class='name sub-heading'>" +
             item.name +
@@ -353,59 +288,54 @@ $(document).ready(function () {
           htmlCard +=
             "<div class='sub-heading'><div class='dot'></div></div></div>";
           htmlCard += "<div class='details'>";
-          htmlCard += "<div class='fee-type'>Fees: " + item.fee_type + "</div>";
-          htmlCard += "<div class='location'>Location:";
-          htmlCard += "<div class='address'>" + item.address + "</div>";
+          htmlCard += "<div class='location'>Location: ";
+          // htmlCard += "<div class='address'>" + item.address + "</div>";
           htmlCard += "<div class='block-name'>" + item.block_name + "</div>";
           htmlCard += "<div class='pincode'>" + item.pincode + "</div>";
+          // htmlCard +=
+          //   "<div class='district-name'>" + item.district_name + "</div>";
+          // htmlCard += "<div class='state-name'>" + item.state_name + "</div>";
+          htmlCard += "</div>";
+          htmlCard += "<div class='date'>Date: <span>" + session.date + "</span></div>";
           htmlCard +=
-            "<div class='district-name'>" + item.district_name + "</div>";
-          htmlCard += "<div class='state-name'>" + item.state_name + "</div>";
+            "<div class='vaccine'>Vaccine: <span>" + session.vaccine + "</span></div>";
+          htmlCard += "<div class='fee-type'>Fees: <span>"+ item.fee_type + "</span></div>";
+          htmlCard +=
+            "<div class='min-age-limit'>Minimum Age Limit: <span>" +
+            session.min_age_limit +
+            "</span></div>";
+          htmlCard +=
+            "<div class='available-capacity'>Availability: <span>" +
+            session.available_capacity +
+            "</span></div>";
+          htmlCard +=
+            "<div class='available-capacity-dose1'>Dose 1 Availability: <span>" +
+            session.available_capacity_dose1 +
+            "</span></div>";
+          htmlCard +=
+            "<div class='available-capacity-dose2'>Dose 2 Availability: <span>" +
+            session.available_capacity_dose2 +
+            "</span></div>";
           htmlCard += "</div>";
-          htmlCard += "<div class='sessions'>Sessions:";
-          var countSession = 0;
-          for (let session of item.sessions) {
-            countSession++;
-            htmlCard += "<div class='session'>Session " + countSession + ":";
-            htmlCard += "<div class='date'>Date: " + session.date + "</div>";
-            htmlCard +=
-              "<div class='vaccine'>Vaccine: " + session.vaccine + "</div>";
-            htmlCard +=
-              "<div class='min-age-limit'>Minimum Age Limit: " +
-              session.min_age_limit +
-              "</div>";
-            htmlCard +=
-              "<div class='available-capacity'>Availability: <span>" +
-              session.available_capacity +
-              "</span></div>";
-            htmlCard +=
-              "<div class='available-capacity-dose1'>Dose 1 Availability: <span>" +
-              session.available_capacity_dose1 +
-              "</span></div>";
-            htmlCard +=
-              "<div class='available-capacity-dose1'>Dose 2 Availability: <span>" +
-              session.available_capacity_dose2 +
-              "</span></div>";
-            htmlCard += "</div>";
+          if(session.available_capacity > 0) {
+            if(session.available_capacity < 10)
+              htmlCard += "<div class='book-fast'>Book Fast! Less than 10 available!</div>";
+            else
+              htmlCard += "<div class='book-fast'>Only "+ session.available_capacity+ " available!</div>";
+            htmlCard += "<div class='navigation-link-to-cowin'>GO TO COWIN WEBSITE</div>";
           }
-          htmlCard += "</div>";
-          htmlCard += "</div>";
-          htmlCard += "</div>";
+          htmlCard += "</a>";
           html = html + htmlCard;
         }
       }
       resultContainer.html(html);
       $("#centers").text(counter + " centers shortlisted");
       $(".card").each(function () {
-        var filterIfAnySessionAvailable = $(this)
-          .find(".session .available-capacity span")
-          .filter(function () {
-            return $(this).text() != "0";
-          });
-        if (filterIfAnySessionAvailable.length == 0)
+        if ($(this).find(".available-capacity span").text() == "0")
           $(this).find(".heading .dot").addClass("red");
         else $(this).find(".heading .dot").addClass("green");
       });
+      checkForFilters();
     }
   }
 
