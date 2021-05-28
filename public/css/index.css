@@ -101,6 +101,12 @@ body > div {
   color: #ffffff;
 }
 
+#disclaimer {
+  font-size: 14px;
+  white-space: pre-wrap;
+  border-bottom: 1px solid;
+}
+
 #result {
   display: flex;
   flex-wrap: wrap;
