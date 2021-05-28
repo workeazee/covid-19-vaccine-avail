@@ -52,7 +52,7 @@ $(document).ready(function () {
   callApi();
   window.setInterval(function () {
     callApi();
-  }, 4000);
+  }, 999000);
   window.setInterval(function () {
     notificationCount = 0;
     notificationGivenInOneCall = false;
@@ -349,6 +349,7 @@ $(document).ready(function () {
   }
 
   function checkForNotification(item) {
+    return false;
     var dose1SessionAvailable = item.sessions.find(
       (session) => session.available_capacity_dose1 > 0
     );
