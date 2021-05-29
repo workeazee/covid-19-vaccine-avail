@@ -332,7 +332,7 @@ $(document).ready(function () {
           htmlCard +=
             "<div class='min-age-limit'>Age: <span>" +
             session.min_age_limit +
-            " +</span></div>";
+            "</span>+</div>";
           htmlCard +=
             "<div class='available-capacity'>Availability: <span>" +
             session.available_capacity +
