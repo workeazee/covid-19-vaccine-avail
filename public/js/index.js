@@ -1,16 +1,22 @@
 $(document).ready(function () {
+  var counter = 0;
   var responseData;
   var resultContainer = $("#result");
 
   var location = localStorage.getItem('lastOpenedLocation');
   var url = localStorage.getItem('url');
+  var viewOnlyAvailable = localStorage.getItem('viewOnlyAvailable');
 
-  if(!location || !url) {
+  if(!location || !url || !viewOnlyAvailable) {
     localStorage.setItem('lastOpenedLocation', locations[0]);
     localStorage.setItem('url', urls[0]);
+    localStorage.setItem('viewOnlyAvailable', true);
     location = localStorage.getItem('lastOpenedLocation');
     url = localStorage.getItem('url');
+    viewOnlyAvailable = localStorage.getItem('viewOnlyAvailable');
   }
+  viewOnlyAvailable = viewOnlyAvailable == 'true' ? true : false;
+  $("#viewOnlyAvailable").prop("checked", viewOnlyAvailable);
   autocomplete(document.getElementById("selected-location"), locations);
   $("#selected-location").val(location);
   document.getElementById("selected-location").setAttribute('value', location);
@@ -129,6 +135,11 @@ $(document).ready(function () {
     populateData(responseData);
   });
 
+  $("#viewOnlyAvailable").on("click", function (e) {
+    populateData(responseData);
+    $("#viewOnlyAvailable").prop("checked")?localStorage.setItem('viewOnlyAvailable', true):localStorage.setItem('viewOnlyAvailable', false);
+  });
+
   function callApi() {
     var today = new Date();
     var date =
@@ -198,7 +209,6 @@ $(document).ready(function () {
 
     if (doseNumAvailabilityFlag && vaccineFlag && feesFlag && ageFlag) return true;
 
-    var counter = 0;
     $(".card").each(function() {
       var doseNumAvailabilityFlag = true;
       var vaccineFlag = true;
@@ -270,17 +280,27 @@ $(document).ready(function () {
 
       if(!(doseNumAvailabilityFlag && vaccineFlag && feesFlag && ageFlag)) {
         $(this).remove();
+        counter --;
       }
-      else counter++;
     });
-    $("#centers").text(counter + " centers shortlisted");
+  }
+
+  function checkForCheckBoxes() {
+    if($('#viewOnlyAvailable').prop('checked')) {
+      $(".card").each(function () {
+        if($(this).find('.available-capacity span').text() == '0') {
+          $(this).remove();
+          counter--;
+        }
+      });
+    }
   }
 
   function displayInHtml(list) {
     if (list.length == 0) {
       resultContainer.text("NA");
     } else {
-      var counter = 0;
+      counter = 0;
       var html = "";
       if (notificationGivenInOneCall) {
         notificationCount++;
@@ -338,13 +358,14 @@ $(document).ready(function () {
         }
       }
       resultContainer.html(html);
-      $("#centers").text(counter + " centers shortlisted");
       $(".card").each(function () {
         if ($(this).find(".available-capacity span").text() == "0")
           $(this).find(".heading .dot").addClass("red");
         else $(this).find(".heading .dot").addClass("green");
       });
       checkForFilters();
+      checkForCheckBoxes();
+      $("#centers").text(counter + " centers shortlisted");
     }
   }
 
