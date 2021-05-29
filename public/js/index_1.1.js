@@ -158,7 +158,7 @@ $(document).ready(function () {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
       if (this.readyState == 4 && this.status == 200) {
-        $("#error").hide();
+        $("#error h3").hide();
         var response = jQuery.parseJSON(this.responseText);
         responseData = response;
         populateData(response);
@@ -309,7 +309,7 @@ $(document).ready(function () {
         checkForNotification(item);
         for (let session of item.sessions) {
           counter++;
-          var htmlCard = "<a class='card' href='https://selfregistration.cowin.gov.in/' target='_blank'>";
+          var htmlCard = "<a class='card' href='https://selfregistration.cowin.gov.in/' target='_blank''>";
           htmlCard +=
             "<div class='heading'><div class='name sub-heading'>" +
             item.name +
@@ -365,7 +365,11 @@ $(document).ready(function () {
       });
       checkForFilters();
       checkForCheckBoxes();
-      $("#centers").text(counter + " centers shortlisted");
+      if(counter)
+        $("#centers").text(counter + " centers shortlisted.");
+      else {
+        $("#centers").text("No centers available. Try removing filters.");
+      }
     }
   }
 
