@@ -211,7 +211,8 @@ body > div {
 
 .card .details {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  /* flex-direction: column; */
   font-size: 14px;
   padding: 5px 10px;
 }
@@ -238,6 +239,26 @@ body > div {
 
 .card .details > div{
   padding: 3px;
+  text-align: center;
+}
+
+.card .details .location, .date{
+  flex: 100%;
+}
+
+.card .details .vaccine, .fee-type, .min-age-limit, .available-capacity, .available-capacity-dose1, .available-capacity-dose2 {
+  flex: 30%;
+  text-align: center;
+}
+
+.card .details .vaccine, .fee-type, .min-age-limit {
+  flex: 30%;
+  text-align: center;
+}
+
+.card .details .vaccine img {
+  height: 16px;
+  width: 16px;
 }
 
 footer {
@@ -252,13 +273,17 @@ footer {
 /* RESPONSIVE SECTION */
 /**********************/
 
-@media only screen and (max-device-width: 768px) {
+@media only screen and (max-device-width: 1024px) {
   .card {
-    flex: 100%;
+    flex: 40%;
   }
 
   .card .details > div {
     padding: 1px;
+  }
+
+  .card .details .vaccine, .fee-type, .min-age-limit, .available-capacity, .available-capacity-dose1, .available-capacity-dose2 {
+    flex: 45%;
   }
 
   .card .book-fast {
@@ -271,5 +296,11 @@ footer {
 
   #filters .filters-list > div {
     margin: 3px 5px;
+  }
+}
+
+@media only screen and (max-device-width: 767px) {
+  .card {
+    flex: 100%;
   }
 }

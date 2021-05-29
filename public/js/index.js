@@ -299,30 +299,30 @@ $(document).ready(function () {
           htmlCard += "<div class='details'>";
           htmlCard += "<div class='location'>Location: ";
           // htmlCard += "<div class='address'>" + item.address + "</div>";
-          htmlCard += "<div class='block-name'>" + item.block_name + "</div>";
-          htmlCard += "<div class='pincode'>" + item.pincode + "</div>";
+          htmlCard += "<span class='block-name'>" + item.block_name + "</span>, ";
+          htmlCard += "<span class='pincode'>" + item.pincode + "</span>";
           // htmlCard +=
           //   "<div class='district-name'>" + item.district_name + "</div>";
           // htmlCard += "<div class='state-name'>" + item.state_name + "</div>";
           htmlCard += "</div>";
           htmlCard += "<div class='date'>Date: <span>" + session.date + "</span></div>";
           htmlCard +=
-            "<div class='vaccine'>Vaccine: <span>" + session.vaccine + "</span></div>";
+            "<div class='vaccine'><img src='images/vaccine-icon.png' alt='Vaccine Icon' type='image/png'/><span>" + session.vaccine + "</span></div>";
           htmlCard += "<div class='fee-type'>Fees: <span>"+ item.fee_type + "</span></div>";
           htmlCard +=
-            "<div class='min-age-limit'>Minimum Age Limit: <span>" +
+            "<div class='min-age-limit'>Age: <span>" +
             session.min_age_limit +
-            "</span></div>";
+            " +</span></div>";
           htmlCard +=
             "<div class='available-capacity'>Availability: <span>" +
             session.available_capacity +
             "</span></div>";
           htmlCard +=
-            "<div class='available-capacity-dose1'>Dose 1 Availability: <span>" +
+            "<div class='available-capacity-dose1'>Dose 1: <span>" +
             session.available_capacity_dose1 +
             "</span></div>";
           htmlCard +=
-            "<div class='available-capacity-dose2'>Dose 2 Availability: <span>" +
+            "<div class='available-capacity-dose2'>Dose 2: <span>" +
             session.available_capacity_dose2 +
             "</span></div>";
           htmlCard += "</div>";
