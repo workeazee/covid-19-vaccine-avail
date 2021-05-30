@@ -17,6 +17,12 @@ $(document).ready(function () {
   }
   viewOnlyAvailable = viewOnlyAvailable == 'true' ? true : false;
   $("#viewOnlyAvailable").prop("checked", viewOnlyAvailable);
+  if($("#viewOnlyAvailable").prop("checked")) {
+    $("#viewOnlyAvailableLabel").text("View Only Available Slots (toggle to view all slots)");
+  }
+  else {
+    $("#viewOnlyAvailableLabel").text("View Only Available Slots (toggle to view only available slots)");
+  }
   autocomplete(document.getElementById("selected-location"), locations);
   $("#selected-location").val(location);
   document.getElementById("selected-location").setAttribute('value', location);
@@ -138,6 +144,12 @@ $(document).ready(function () {
   $("#viewOnlyAvailable").on("click", function (e) {
     populateData(responseData);
     $("#viewOnlyAvailable").prop("checked")?localStorage.setItem('viewOnlyAvailable', true):localStorage.setItem('viewOnlyAvailable', false);
+    if($("#viewOnlyAvailable").prop("checked")) {
+      $("#viewOnlyAvailableLabel").text("View Only Available Slots (toggle to view all slots)");
+    }
+    else {
+      $("#viewOnlyAvailableLabel").text("View Only Available Slots (toggle to view only available slots)");
+    }
   });
 
   function callApi() {
