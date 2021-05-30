@@ -50,7 +50,7 @@ body > div {
   display: inline-block;
 }
 
-#location .input-location #selected-location{
+#location .input-location .selected-location{
   text-align: center;
   padding: 8px;
   font-size: 16px;

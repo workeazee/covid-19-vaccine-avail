@@ -1,20 +1,24 @@
 $(document).ready(function () {
   var counter = 0;
+  var statesResponseData;
+  var districtsResponseData;
   var responseData;
   var resultContainer = $("#result");
 
-  var location = localStorage.getItem('lastOpenedLocation');
-  var url = localStorage.getItem('url');
+  var lastOpenedState = localStorage.getItem('lastOpenedState');
+  var lastOpenedDistrict = localStorage.getItem('lastOpenedDistrict');
   var viewOnlyAvailable = localStorage.getItem('viewOnlyAvailable');
 
-  if(!location || !url || !viewOnlyAvailable) {
-    localStorage.setItem('lastOpenedLocation', locations[0]);
-    localStorage.setItem('url', urls[0]);
+  if(!lastOpenedState || !lastOpenedDistrict || !viewOnlyAvailable) {
+    localStorage.setItem('lastOpenedState', 'Maharashtra');
+    localStorage.setItem('lastOpenedDistrict', 'Thane');
     localStorage.setItem('viewOnlyAvailable', true);
-    location = localStorage.getItem('lastOpenedLocation');
-    url = localStorage.getItem('url');
+    lastOpenedState = localStorage.getItem('lastOpenedState');
+    lastOpenedDistrict = localStorage.getItem('lastOpenedDistrict');
     viewOnlyAvailable = localStorage.getItem('viewOnlyAvailable');
   }
+  getStates();
+
   viewOnlyAvailable = viewOnlyAvailable == 'true' ? true : false;
   $("#viewOnlyAvailable").prop("checked", viewOnlyAvailable);
   if($("#viewOnlyAvailable").prop("checked")) {
@@ -23,9 +27,8 @@ $(document).ready(function () {
   else {
     $("#viewOnlyAvailableLabel").text("View Only Available Slots (toggle to view only available slots)");
   }
-  autocomplete(document.getElementById("selected-location"), locations);
-  $("#selected-location").val(location);
-  document.getElementById("selected-location").setAttribute('value', location);
+  document.getElementById("selected-location-states").setAttribute('value', lastOpenedState);
+  document.getElementById("selected-location-districts").setAttribute('value', lastOpenedDistrict);
 
   var notificationsPermissionsDose1 = false;
   var notificationsPermissionsDose2 = false;
@@ -179,8 +182,60 @@ $(document).ready(function () {
         $("#error").show();
       }
     };
-    url = localStorage.getItem('url');
-    xhttp.open("GET", url + date.substring(0, date.indexOf(" ")), true);
+    if (districtsResponseData) {
+      var url = calendarByDistrictURL + districtsResponseData.districts.find((district) => district.district_name == $("#selected-location-districts").val()).district_id;
+      xhttp.open("GET", url + "&date=" + date.substring(0, date.indexOf(" ")), true);
+      xhttp.send();
+    }
+  }
+
+  function getStates() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        $("#error h3").hide();
+        statesResponseData = jQuery.parseJSON(this.responseText);
+        states = [];
+        for (let state of statesResponseData.states) {
+          states.push(state.state_name);
+        }
+        autocomplete(document.getElementById("selected-location-states"), states);
+        getDistricts(lastOpenedState);
+      } else {
+        $("#error").show();
+      }
+    };
+    xhttp.open("GET", statesURL, true);
+    xhttp.send();
+  }
+
+  function getDistricts(lastOpenedState) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function () {
+      if (this.readyState == 4 && this.status == 200) {
+        $("#error h3").hide();
+        districtsResponseData = jQuery.parseJSON(this.responseText);
+        districts = [];
+        for (let district of districtsResponseData.districts) {
+          districts.push(district.district_name);
+        }
+        if(localStorage.getItem('lastOpenedState') != $("#selected-location-states").val()) {
+          $("#selected-location-districts").val(districtsResponseData.districts[0].district_name);
+          document.getElementById("selected-location-districts").setAttribute('value', lastOpenedDistrict);
+        }
+        localStorage.setItem('lastOpenedState', $("#selected-location-states").val());
+        localStorage.setItem('lastOpenedDistrict', $("#selected-location-districts").val());
+        lastOpenedState = localStorage.getItem('lastOpenedState');
+        lastOpenedDistrict = localStorage.getItem('lastOpenedDistrict');
+        $('html, body').animate({
+          scrollTop: $("#last-updated-date-time").offset().top
+        }, 1000);
+        autocomplete(document.getElementById("selected-location-districts"), districts);
+      } else {
+        $("#error").show();
+      }
+    };
+    xhttp.open("GET", districtsURL+statesResponseData.states.find((state) => state.state_name === lastOpenedState).state_id, true);
     xhttp.send();
   }
 
@@ -474,12 +529,7 @@ $(document).ready(function () {
                 /*insert the value for the autocomplete text field:*/
                 inp.value = this.getElementsByTagName("input")[0].value;
                 inp.setAttribute('value', this.getElementsByTagName("input")[0].value);
-                $('html, body').animate({
-                    scrollTop: $("#last-updated-date-time").offset().top
-                }, 1000);
-                localStorage.setItem('lastOpenedLocation', this.getElementsByTagName("input")[0].value);
-                localStorage.setItem('url', urls[locations.indexOf(this.getElementsByTagName("input")[0].value)]);
-                callApi();
+                getDistricts($("#selected-location-states").val());
                 /*close the list of autocompleted values,
                 (or any other open lists of autocompleted values:*/
                 closeAllLists();
@@ -507,8 +557,7 @@ $(document).ready(function () {
             /*create a DIV element for each matching element:*/
             b = document.createElement("DIV");
             /*make the matching letters bold:*/
-            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-            b.innerHTML += arr[i].substr(val.length);
+            b.innerHTML += arr[i];
             /*insert a input field that will hold the current array item's value:*/
             b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
             /*execute a function when someone clicks on the item value (DIV element):*/
@@ -516,12 +565,7 @@ $(document).ready(function () {
                 /*insert the value for the autocomplete text field:*/
                 inp.value = this.getElementsByTagName("input")[0].value;
                 inp.setAttribute('value', this.getElementsByTagName("input")[0].value);
-                $('html, body').animate({
-                    scrollTop: $("#last-updated-date-time").offset().top
-                }, 1000);
-                localStorage.setItem('lastOpenedLocation', this.getElementsByTagName("input")[0].value);
-                localStorage.setItem('url', urls[locations.indexOf(this.getElementsByTagName("input")[0].value)]);
-                callApi();
+                getDistricts($("#selected-location-states").val());
                 /*close the list of autocompleted values,
                 (or any other open lists of autocompleted values:*/
                 closeAllLists();
@@ -584,7 +628,8 @@ $(document).ready(function () {
     }
     /*execute a function when someone clicks in the document:*/
     document.addEventListener("click", function (e) {
-        closeAllLists(e.target);
+        if($(e.target).closest(".input-location.autocomplete").length == 0)
+          closeAllLists(e.target);
     });
   }
 });
