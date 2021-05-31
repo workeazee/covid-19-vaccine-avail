@@ -30,7 +30,7 @@
     <!-- <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" /> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" href="css/all.min.css" />
-    <link rel="stylesheet" type="text/css" href="css/index_2.0.1.css" />
+    <link rel="stylesheet" type="text/css" href="css/index_2.1.0.css" />
 
     <script src="js/jquery-3.5.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -44,8 +44,8 @@
       integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
       crossorigin="anonymous"
     ></script>
-    <script src="js/data_2.0.1.js"></script>
-    <script src="js/index_2.0.1.js"></script>
+    <script src="js/data_2.1.0.js"></script>
+    <script src="js/index_2.1.0.js"></script>
   </head>
   <body onload="loadingFunction()">
     <a class="whats-app" 
@@ -69,6 +69,9 @@
       <div class="filters-title title btn btn-warning" type="button" data-toggle="collapse" data-target=".filters-list">
         Filters <img src="images/filter.png" alt="Apply Filter Icon" />
       </div>
+      <div class="notification-title title btn btn-warning" type="button" data-toggle="collapse" data-target=".notification-items">
+        Notifications <img src="images/notification.png" alt="Apply Filter Icon" />
+      </div>
       <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" id="viewOnlyAvailable">
         <label class="form-check-label" id="viewOnlyAvailableLabel" for="viewOnlyAvailable">View Only Available Slots</label>
@@ -76,10 +79,6 @@
     </div>
     <div id="legend">
       <div class="legend-items collapse">
-        <div class="legend-item notification_enable_disable" id="notification_enable_disable_dose1">Enable notifications for dose 1
-        </div>
-        <div class="legend-item notification_enable_disable" id="notification_enable_disable_dose2">Enable notifications for dose 2
-        </div>
         <div class="legend-item">
           <div class="dot red"></div>
           <div>Not Available</div>
@@ -89,6 +88,27 @@
           <div>Available</div>
         </div>
       </div>
+      <div class="notification-items collapse">
+        <p>Enable or disable toggles to get notifications for available vaccine slots with required conditions.</p>
+        <div class="notification-item form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="nage18">
+          <label class="form-check-label" id="nage18Label" for="nage18"> 18 +</label>
+        </div>
+        <div class="notification-item form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="nage45">
+          <label class="form-check-label" id="nage45Label" for="nage45"> 45 +</label>
+        </div>
+        <div class="notification-item form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="ndose1">
+          <label class="form-check-label" id="ndose1Label" for="ndose1"> Dose 1</label>
+        </div>
+        <div class="notification-item form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="ndose2">
+          <label class="form-check-label" id="ndose2Label" for="ndose2"> Dose 2</label>
+        </div>
+      </div>
+    </div>
+    <div id="disclaimer" class="collapse">Keep website open in a desktop browser tab to get instant notification when a slot is available!&#10;*All data is real-time as you can see the latest time when data is updated. If you see any slot available, please book on CoWin instantly before the slots are full. 
     </div>
     <div id="last-updated-date-time">
       <span></span>
@@ -107,8 +127,6 @@
         <div class="filter" id="filter_free">FREE</div>
         <div class="filter" id="filter_paid">PAID</div>
       </div>
-    </div>
-    <div id="disclaimer" class="collapse">Keep website open in a desktop browser tab to get instant notification when a slot is available!&#10;*All data is real-time as you can see the latest time when data is updated. If you see any slot available, please book on CoWin instantly before the slots are full. 
     </div>
     <div id="centers"></div>
     <div id="result"></div>
