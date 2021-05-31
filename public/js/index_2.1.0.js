@@ -1,26 +1,41 @@
 $(document).ready(function () {
+  var apiCalled = 0;
   var counter = 0;
   var statesResponseData;
   var districtsResponseData;
   var responseData;
   var resultContainer = $("#result");
 
+  if(!localStorage.getItem('lastOpenedState'))
+    localStorage.setItem('lastOpenedState', 'Maharashtra');
+  if(!localStorage.getItem('lastOpenedDistrict'))
+    localStorage.setItem('lastOpenedDistrict', 'Thane');
+  if(!localStorage.getItem('viewOnlyAvailable'))
+    localStorage.setItem('viewOnlyAvailable', true);
+
+  if(!localStorage.getItem('nage18'))
+    localStorage.setItem('nage18', true);
+  if(!localStorage.getItem('nage45'))
+    localStorage.setItem('nage45', true);
+  if(!localStorage.getItem('ndose1'))
+    localStorage.setItem('ndose1', true);
+  if(!localStorage.getItem('ndose2'))
+    localStorage.setItem('ndose2', true);
+
   var lastOpenedState = localStorage.getItem('lastOpenedState');
   var lastOpenedDistrict = localStorage.getItem('lastOpenedDistrict');
-  var viewOnlyAvailable = localStorage.getItem('viewOnlyAvailable');
-
-  if(!lastOpenedState || !lastOpenedDistrict || !viewOnlyAvailable) {
-    localStorage.setItem('lastOpenedState', 'Maharashtra');
-    localStorage.setItem('lastOpenedDistrict', 'Thane');
-    localStorage.setItem('viewOnlyAvailable', true);
-    lastOpenedState = localStorage.getItem('lastOpenedState');
-    lastOpenedDistrict = localStorage.getItem('lastOpenedDistrict');
-    viewOnlyAvailable = localStorage.getItem('viewOnlyAvailable');
-  }
+  var viewOnlyAvailable = localStorage.getItem('viewOnlyAvailable') == 'true' ? true : false;
+  var nage18 = localStorage.getItem('nage18') == 'true' ? true : false;
+  var nage45 = localStorage.getItem('nage45') == 'true' ? true : false;
+  var ndose1 = localStorage.getItem('ndose1') == 'true' ? true : false;
+  var ndose2 = localStorage.getItem('ndose2') == 'true' ? true : false;
   getStates();
 
-  viewOnlyAvailable = viewOnlyAvailable == 'true' ? true : false;
   $("#viewOnlyAvailable").prop("checked", viewOnlyAvailable);
+  $("#nage18").prop("checked", nage18);
+  $("#nage45").prop("checked", nage45);
+  $("#ndose1").prop("checked", ndose1);
+  $("#ndose2").prop("checked", ndose2);
   if($("#viewOnlyAvailable").prop("checked")) {
     $("#viewOnlyAvailableLabel").text("View Only Available Slots (toggle to view all slots)");
   }
@@ -30,10 +45,6 @@ $(document).ready(function () {
   document.getElementById("selected-location-states").setAttribute('value', lastOpenedState);
   document.getElementById("selected-location-districts").setAttribute('value', lastOpenedDistrict);
 
-  var notificationsPermissionsDose1 = false;
-  var notificationsPermissionsDose2 = false;
-  var notificationCount = 0;
-  var notificationGivenInOneCall = false;
   // Otherwise, we need to ask the user for permission
   if (
     window.Notification &&
@@ -43,93 +54,23 @@ $(document).ready(function () {
     Notification.requestPermission(function (permission) {
       // If the user accepts, let's create a notification
       if (permission === "granted") {
-        notificationsPermissionsDose1 = true;
-        notificationsPermissionsDose2 = true;
-        $("#notification_enable_disable_dose1").addClass("selected");
-        $("#notification_enable_disable_dose2").addClass("selected");
-        $("#notification_enable_disable_dose1").text("Disable notifications for dose 1");
-        $("#notification_enable_disable_dose2").text("Disable notifications for dose 2");
-      } else {
-        $("#notification_enable_disable_dose1").removeClass("selected");
-        $("#notification_enable_disable_dose2").removeClass("selected");
-        $("#notification_enable_disable_dose1").text("Enable notifications for dose 1");
-        $("#notification_enable_disable_dose2").text("Enable notifications for dose 2");
       }
     });
   }
 
   var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   if (isMobile) {
-    $("#notification_enable_disable_dose1").remove();
-    $("#notification_enable_disable_dose2").remove();
+    $(".notification-title").remove();
+    $(".notification-items").remove();
   }
 
   callApi();
   window.setInterval(function () {
     callApi();
-  }, 4000);
+  }, 4000);  
   window.setInterval(function () {
-    notificationCount = 0;
-    notificationGivenInOneCall = false;
+    checkForNotifications();
   }, 60000);
-
-  $("#notification_enable_disable_dose1").on("click", function (e) {
-    if ($("#notification_enable_disable_dose1").hasClass("selected")) {
-      notificationsPermissionsDose1 = false;
-      $("#notification_enable_disable_dose1").removeClass("selected");
-      $("#notification_enable_disable_dose1").text("Enable notifications for dose 1");
-    } else {
-      if (window.Notification && Notification.permission !== "granted") {
-        Notification.requestPermission(function (permission) {
-          // If the user accepts, let's create a notification
-          if (permission === "granted") {
-            notificationsPermissionsDose1 = true;
-            notificationCount = 0;
-            notificationGivenInOneCall = false;
-            $("#notification_enable_disable_dose1").addClass("selected");
-            $("#notification_enable_disable_dose1").text("Disable notifications for dose 1");
-          } else {
-            $("#notification_enable_disable_dose1").removeClass("selected");
-            $("#notification_enable_disable_dose1").text("Enable notifications for dose 1");
-          }
-        });
-      } else if (window.Notification && Notification.permission === "granted")
-        notificationsPermissionsDose1 = true;
-        notificationCount = 0;
-        notificationGivenInOneCall = false;
-      $("#notification_enable_disable_dose1").addClass("selected");
-      $("#notification_enable_disable_dose1").text("Disable notifications for dose 1");
-    }
-  });
-
-  $("#notification_enable_disable_dose2").on("click", function (e) {
-    if ($("#notification_enable_disable_dose2").hasClass("selected")) {
-      notificationsPermissionsDose2 = false;
-      $("#notification_enable_disable_dose2").removeClass("selected");
-      $("#notification_enable_disable_dose2").text("Enable notifications for dose 2");
-    } else {
-      if (window.Notification && Notification.permission !== "granted") {
-        Notification.requestPermission(function (permission) {
-          // If the user accepts, let's create a notification
-          if (permission === "granted") {
-            notificationsPermissionsDose2 = true;
-            notificationCount = 0;
-            notificationGivenInOneCall = false;
-            $("#notification_enable_disable_dose2").addClass("selected");
-            $("#notification_enable_disable_dose2").text("Disable notifications for dose 2");
-          } else {
-            $("#notification_enable_disable_dose2").removeClass("selected");
-            $("#notification_enable_disable_dose2").text("Enable notifications for dose 2");
-          }
-        });
-      } else if (window.Notification && Notification.permission === "granted")
-        notificationsPermissionsDose2 = true;
-        notificationCount = 0;
-        notificationGivenInOneCall = false;
-      $("#notification_enable_disable_dose2").addClass("selected");
-      $("#notification_enable_disable_dose2").text("Disable notifications for dose 2");
-    }
-  });
 
   $('.filter').on("click", function (e) {
     e.preventDefault();
@@ -153,6 +94,25 @@ $(document).ready(function () {
     else {
       $("#viewOnlyAvailableLabel").text("View Only Available Slots (toggle to view only available slots)");
     }
+  });
+
+  $(".notification-items .form-check-input").on("click", function (e) {
+    $(this).prop("checked")?localStorage.setItem(e.target.id, true):localStorage.setItem(e.target.id, false);
+    switch(e.target.id){
+      case 'ndose1':
+        ndose1 = localStorage.getItem('ndose1') == 'true' ? true : false;
+        break;
+      case 'ndose2':
+        ndose2 = localStorage.getItem('ndose2') == 'true' ? true : false;
+        break;
+      case 'nage18':
+        nage18 = localStorage.getItem('nage18') == 'true' ? true : false;
+        break;
+      case 'nage45':
+        nage45 = localStorage.getItem('nage45') == 'true' ? true : false;
+        break;
+    }
+    checkForNotifications();
   });
 
   function callApi() {
@@ -222,14 +182,15 @@ $(document).ready(function () {
         if(localStorage.getItem('lastOpenedState') != $("#selected-location-states").val()) {
           $("#selected-location-districts").val(districtsResponseData.districts[0].district_name);
           document.getElementById("selected-location-districts").setAttribute('value', lastOpenedDistrict);
+        } else {
+          $('html, body').animate({
+            scrollTop: $("#last-updated-date-time").offset().top
+          }, 1000);
         }
         localStorage.setItem('lastOpenedState', $("#selected-location-states").val());
         localStorage.setItem('lastOpenedDistrict', $("#selected-location-districts").val());
         lastOpenedState = localStorage.getItem('lastOpenedState');
         lastOpenedDistrict = localStorage.getItem('lastOpenedDistrict');
-        $('html, body').animate({
-          scrollTop: $("#last-updated-date-time").offset().top
-        }, 1000);
         callApi();
         autocomplete(document.getElementById("selected-location-districts"), districts);
       } else {
@@ -370,11 +331,7 @@ $(document).ready(function () {
     } else {
       counter = 0;
       var html = "";
-      if (notificationGivenInOneCall) {
-        notificationCount++;
-      }
       for (let item of list) {
-        checkForNotification(item);
         for (let session of item.sessions) {
           counter++;
           var htmlCard = "<a class='card' href='https://selfregistration.cowin.gov.in/' target='_blank''>";
@@ -426,13 +383,16 @@ $(document).ready(function () {
         }
       }
       resultContainer.html(html);
+      checkForFilters();
+      checkForCheckBoxes();
+      if(apiCalled == 0)
+        checkForNotifications();
+      apiCalled++;
       $(".card").each(function () {
         if ($(this).find(".available-capacity span").text() == "0")
           $(this).find(".heading .dot").addClass("red");
         else $(this).find(".heading .dot").addClass("green");
       });
-      checkForFilters();
-      checkForCheckBoxes();
       if(counter)
         $("#centers").text(counter + " centers shortlisted.");
       else {
@@ -441,30 +401,41 @@ $(document).ready(function () {
     }
   }
 
-  function checkForNotification(item) {
-    var dose1SessionAvailable = item.sessions.find(
-      (session) => session.available_capacity_dose1 > 0
-    );
-    var dose2SessionAvailable = item.sessions.find(
-      (session) => session.available_capacity_dose2 > 0
-    );
+  function checkForNotifications() {
+    if(isMobile || Notification.permission !== "granted")
+      return;
     
-    var options = {
-      body:
-        "Center: " +
-        item.name +
-        "\n" +
-        item.address +
-        "," +
-        item.block_name +
-        "," +
-        item.pincode,
-      vibrate: [500, 250, 500, 250, 500, 250, 500, 250, 500],
-    };
+    $(".card").each(function () {
+      if(!(ndose1 || ndose2 || nage18 || nage45)) {
+        return;
+      }
+      var doseFlag = false;
+      var ageFlag = false;
 
-    if (dose1SessionAvailable && notificationsPermissionsDose1) {
-      if (notificationCount < 1) {
-        notificationGivenInOneCall = true;
+      if($(this).find('.available-capacity span').text() != '0') {
+        if(ndose1 && $(this).find('.available-capacity-dose1 span').text() != '0'){
+          doseFlag = true;
+        }
+        if(ndose2 && $(this).find('.available-capacity-dose2 span').text() != '0'){
+          doseFlag = true;
+        }
+        if(nage18 && $(this).find('.min-age-limit span').text() == 18){
+          ageFlag = true;
+        }
+        if(nage45 && $(this).find('.min-age-limit span').text() == 45){
+          ageFlag = true;
+        }
+      }
+
+      if(doseFlag || ageFlag) {
+        var options = {
+          body:
+            "Center: " +
+            $(this).find('.name').text() +
+            "\n" +
+            $(this).find('.block-name').text() + ", " + $(this).find('.pincode').text(),
+          vibrate: [500, 250, 500, 250, 500, 250, 500, 250, 500],
+        };
         var notification = new Notification(
           "Vaccine Center Available!",
           options
@@ -477,24 +448,7 @@ $(document).ready(function () {
           );
         };
       }
-    }
-
-    if (dose2SessionAvailable && notificationsPermissionsDose2) {
-      if (notificationCount < 1) {
-        notificationGivenInOneCall = true;
-        var notification = new Notification(
-          "Vaccine Center Available!",
-          options
-        );
-        notification.onclick = function (event) {
-          event.preventDefault(); // prevent the browser from focusing the Notification's tab
-          window.open(
-            "https://covid-19-vaccine-availability.web.app/",
-            "_blank"
-          );
-        };
-      }
-    }
+    });
   }
 
   function autocomplete(inp, arr) {
