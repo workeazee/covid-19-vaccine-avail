@@ -476,9 +476,6 @@ $(document).ready(function () {
             );
           };
         }
-        console.log(notificationsGiven);
-      } else {
-
       }
     });
   }
