@@ -1,10 +1,10 @@
 $(document).ready(function () {
-  var apiCalled = 0;
   var counter = 0;
   var statesResponseData;
   var districtsResponseData;
   var responseData;
   var resultContainer = $("#result");
+  var notificationsGiven = [];
 
   if(!localStorage.getItem('lastOpenedState'))
     localStorage.setItem('lastOpenedState', 'Maharashtra');
@@ -68,9 +68,6 @@ $(document).ready(function () {
   window.setInterval(function () {
     callApi();
   }, 4000);  
-  window.setInterval(function () {
-    checkForNotifications();
-  }, 60000);
 
   $('.filter').on("click", function (e) {
     e.preventDefault();
@@ -112,6 +109,7 @@ $(document).ready(function () {
         nage45 = localStorage.getItem('nage45') == 'true' ? true : false;
         break;
     }
+    notificationsGiven = [];
     checkForNotifications();
   });
 
@@ -385,9 +383,7 @@ $(document).ready(function () {
       resultContainer.html(html);
       checkForFilters();
       checkForCheckBoxes();
-      if(apiCalled == 0)
-        checkForNotifications();
-      apiCalled++;
+      checkForNotifications();
       $(".card").each(function () {
         if ($(this).find(".available-capacity span").text() == "0")
           $(this).find(".heading .dot").addClass("red");
@@ -407,6 +403,7 @@ $(document).ready(function () {
     
     $(".card").each(function () {
       if(!(ndose1 || ndose2 || nage18 || nage45)) {
+        notificationsGiven = [];
         return;
       }
       var doseFlag = false;
@@ -428,25 +425,60 @@ $(document).ready(function () {
       }
 
       if(doseFlag || ageFlag) {
-        var options = {
-          body:
-            "Center: " +
-            $(this).find('.name').text() +
-            "\n" +
-            $(this).find('.block-name').text() + ", " + $(this).find('.pincode').text(),
-          vibrate: [500, 250, 500, 250, 500, 250, 500, 250, 500],
+        var vaccineCenter = {
+          center: $(this).find('.name').text(),
+          location: $(this).find('.block-name').text(),
+          pincode: $(this).find('.pincode').text(),
+          date: $(this).find('.date span').text(),
+          vaccine: $(this).find('.vaccine span').text(),
+          minAgeLimit: $(this).find('.min-age-limit span').text(),
+          availableCapacity: $(this).find('.available-capacity span').text()
         };
-        var notification = new Notification(
-          "Vaccine Center Available!",
-          options
-        );
-        notification.onclick = function (event) {
-          event.preventDefault(); // prevent the browser from focusing the Notification's tab
-          window.open(
-            "https://covid-19-vaccine-availability.web.app/",
-            "_blank"
+        let isNotificationGivenVaccineCenter = notificationsGiven.find((notification) => {
+          return notification.center == vaccineCenter.center &&
+          notification.location == vaccineCenter.location &&
+          notification.pincode == vaccineCenter.pincode && 
+          notification.date == vaccineCenter.date &&
+          notification.vaccine == vaccineCenter.vaccine &&
+          notification.minAgeLimit == vaccineCenter.minAgeLimit;
+        });
+        if(isNotificationGivenVaccineCenter) {
+          if(isNotificationGivenVaccineCenter.availableCapacity != vaccineCenter.availableCapacity) {
+            notificationsGiven = notificationsGiven.filter((notification) => 
+            !(notification.center == vaccineCenter.center &&
+            notification.location == vaccineCenter.location &&
+            notification.pincode == vaccineCenter.pincode && 
+            notification.date == vaccineCenter.date &&
+            notification.vaccine == vaccineCenter.vaccine &&
+            notification.minAgeLimit == vaccineCenter.minAgeLimit));
+            isNotificationGivenVaccineCenter = null;
+          }
+        }
+        if(!isNotificationGivenVaccineCenter) {
+          notificationsGiven.push(vaccineCenter);
+          var options = {
+            body:
+              "Center: " +
+              $(this).find('.name').text() +
+              "\n" +
+              $(this).find('.block-name').text() + ", " + $(this).find('.pincode').text(),
+            vibrate: [500, 250, 500, 250, 500, 250, 500, 250, 500],
+          };
+          var notification = new Notification(
+            "Vaccine Center Available!",
+            options
           );
-        };
+          notification.onclick = function (event) {
+            event.preventDefault(); // prevent the browser from focusing the Notification's tab
+            window.open(
+              "https://covid-19-vaccine-availability.web.app/",
+              "_blank"
+            );
+          };
+        }
+        console.log(notificationsGiven);
+      } else {
+
       }
     });
   }
@@ -483,6 +515,7 @@ $(document).ready(function () {
             /*execute a function when someone clicks on the item value (DIV element):*/
             b.addEventListener("click", function(e) {
                 /*insert the value for the autocomplete text field:*/
+                notificationsGiven = [];
                 inp.value = this.getElementsByTagName("input")[0].value;
                 inp.setAttribute('value', this.getElementsByTagName("input")[0].value);
                 getDistricts($("#selected-location-states").val());
@@ -519,6 +552,7 @@ $(document).ready(function () {
             /*execute a function when someone clicks on the item value (DIV element):*/
             b.addEventListener("click", function(e) {
                 /*insert the value for the autocomplete text field:*/
+                notificationsGiven = [];
                 inp.value = this.getElementsByTagName("input")[0].value;
                 inp.setAttribute('value', this.getElementsByTagName("input")[0].value);
                 getDistricts($("#selected-location-states").val());
