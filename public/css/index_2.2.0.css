@@ -38,10 +38,22 @@ body > div {
   background: #f79431;
   z-index: 100;
   padding: 12px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  box-shadow: 0 3px 5px -1px rgb(0 0 0 / 20%), 0 6px 10px 0 rgb(0 0 0 / 14%), 0 1px 18px 0 rgb(0 0 0 / 12%);
+  transition: all 1s ease;
+}
+
+.page-title.scrolled {
+  font-size: 18px;
+  padding: 8px 12px;
+  transition: all 1s ease;
 }
 
 #location {
   text-align: center;
+  margin-top: 75px;
 }
 
 #location .title-location {
@@ -253,12 +265,36 @@ body > div {
   width: 16px;
 }
 
+#error {
+  margin-bottom: 50px;
+}
+
 footer {
-  background: #f79431;
+  background: antiquewhite;
   float: left;
   width: 100%;
   text-align: center;
   font-weight: 600;
+  position: fixed;
+  bottom: 0;
+  box-shadow: 0 -3px 5px -1px rgba(0, 0, 0, 0.2),
+    0 -6px 10px 0 rgba(0, 0, 0, 0.14), 0 -1px 18px 0 rgba(0, 0, 0, 0.12);
+  transition: all 1s ease;
+  display: flex;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: 0;
+  justify-content: space-evenly;
+}
+
+footer p {
+  margin: 1rem;
+  transition: all 1s ease;
+}
+
+footer.scrolled p {
+  margin: 0.5rem;
+  transition: all 1s ease;
 }
 
 .whats-app {
@@ -313,5 +349,19 @@ footer {
 @media only screen and (max-device-width: 767px) {
   .card {
     flex: 100%;
+  }
+
+  footer {
+    flex-direction: column;
+  }
+
+  footer p {
+    margin: 5px;
+    transition: all 1s ease;
+  }
+  
+  footer.scrolled p {
+    margin: 0.5px;
+    transition: all 1s ease;
   }
 }

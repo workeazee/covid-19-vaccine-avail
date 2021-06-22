@@ -5,6 +5,22 @@ $(document).ready(function () {
   var responseData;
   var resultContainer = $("#result");
   var notificationsGiven = [];
+  var availablePincodes = [];
+
+  $(window).scroll(function () {
+    // check if scroll event happened
+    if ($(document).scrollTop() > 50) {
+      $(".page-title").addClass("scrolled");
+    } else {
+      $(".page-title").removeClass("scrolled");
+    }
+    console.log($(document).height() - $(window).height() - $(window).scrollTop());
+    if ($(document).height() - $(window).height() - $(window).scrollTop() > 50) {
+      $(".footer").addClass("scrolled");
+    } else {
+      $(".footer").removeClass("scrolled");
+    }
+  });
 
   if(!localStorage.getItem('lastOpenedState'))
     localStorage.setItem('lastOpenedState', 'Maharashtra');
@@ -12,11 +28,13 @@ $(document).ready(function () {
     localStorage.setItem('lastOpenedDistrict', 'Thane');
   if(!localStorage.getItem('viewOnlyAvailable'))
     localStorage.setItem('viewOnlyAvailable', true);
+  if(!localStorage.getItem('filterPincode'))
+    localStorage.setItem('filterPincode', 'VIEW ALL PINCODES');
 
   if(!localStorage.getItem('nage18'))
     localStorage.setItem('nage18', true);
   if(!localStorage.getItem('nage30'))
-    localStorage.setItem('nage30', false);
+    localStorage.setItem('nage30', true);
   if(!localStorage.getItem('nage45'))
     localStorage.setItem('nage45', true);
   if(!localStorage.getItem('ndose1'))
@@ -32,6 +50,7 @@ $(document).ready(function () {
   var nage45 = localStorage.getItem('nage45') == 'true' ? true : false;
   var ndose1 = localStorage.getItem('ndose1') == 'true' ? true : false;
   var ndose2 = localStorage.getItem('ndose2') == 'true' ? true : false;
+  var filterPincode = localStorage.getItem('filterPincode');
   getStates();
 
   $("#viewOnlyAvailable").prop("checked", viewOnlyAvailable);
@@ -48,6 +67,7 @@ $(document).ready(function () {
   }
   document.getElementById("selected-location-states").setAttribute('value', lastOpenedState);
   document.getElementById("selected-location-districts").setAttribute('value', lastOpenedDistrict);
+  document.getElementById("selected-location-pincode").setAttribute('value', filterPincode);
 
   // Otherwise, we need to ask the user for permission
   if (
@@ -187,11 +207,17 @@ $(document).ready(function () {
         if(localStorage.getItem('lastOpenedState') != $("#selected-location-states").val()) {
           $("#selected-location-districts").val(districtsResponseData.districts[0].district_name);
           document.getElementById("selected-location-districts").setAttribute('value', lastOpenedDistrict);
+          document.getElementById("selected-location-pincode").setAttribute('value', 'VIEW ALL PINCODES');
         } else {
           $('html, body').animate({
             scrollTop: $("#last-updated-date-time").offset().top
           }, 1000);
         }
+        if(localStorage.getItem('lastOpenedDistrict') != $("#selected-location-districts").val()) {
+          document.getElementById("selected-location-pincode").setAttribute('value', 'VIEW ALL PINCODES');
+        }
+        filterPincode = document.getElementById("selected-location-pincode").getAttribute('value');
+        localStorage.setItem('filterPincode', filterPincode);
         localStorage.setItem('lastOpenedState', $("#selected-location-states").val());
         localStorage.setItem('lastOpenedDistrict', $("#selected-location-districts").val());
         lastOpenedState = localStorage.getItem('lastOpenedState');
@@ -215,6 +241,15 @@ $(document).ready(function () {
   }
 
   function checkForFilters() {
+    $(".card").each(function() {
+      if(filterPincode != 'VIEW ALL PINCODES') {
+        if(filterPincode != $(this).find('.pincode').text()) {
+          $(this).remove();
+          counter --;
+        }
+      }
+    });
+
     var doseNumAvailabilityFlag = true;
     var vaccineFlag = true;
     var feesFlag = true;
@@ -363,7 +398,9 @@ $(document).ready(function () {
     } else {
       counter = 0;
       var html = "";
+      availablePincodes = [];
       for (let item of list) {
+        availablePincodes.push(item.pincode.toString());
         for (let session of item.sessions) {
           counter++;
           var htmlCard = "<a class='card' href='https://selfregistration.cowin.gov.in/' target='_blank''>";
@@ -414,6 +451,9 @@ $(document).ready(function () {
           html = html + htmlCard;
         }
       }
+      availablePincodes = availablePincodes.filter((x, i, a) => a.indexOf(x) == i).sort();
+      availablePincodes.unshift('VIEW ALL PINCODES');
+      autocomplete(document.getElementById("selected-location-pincode"), availablePincodes);
       resultContainer.html(html);
       checkForFilters();
       checkForCheckBoxes();
