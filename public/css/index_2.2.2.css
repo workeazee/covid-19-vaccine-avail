@@ -167,7 +167,6 @@ body > div {
 .card {
   all: unset;
   color: #000;
-  cursor: pointer;
   flex: 20%;
   margin: 10px;
   text-align: left;
@@ -193,8 +192,13 @@ body > div {
   border-radius: 10px;
 }
 
-.card .heading .sub-heading {
-  flex: auto;
+.card .heading .name {
+  flex: 80%;
+}
+
+.card .heading .copy-to-clipboard {
+  flex: 10%;
+  cursor: pointer;
 }
 
 .dot {
@@ -216,12 +220,13 @@ body > div {
 .card .details {
   display: flex;
   flex-wrap: wrap;
-  /* flex-direction: column; */
+  cursor: pointer;
   font-size: 14px;
   padding: 5px 10px;
 }
 
-.card .book-fast{
+.card .book-fast {
+  cursor: pointer;
   font-weight: 600;
   font-size: 16px;
   background: #fbbe34;
@@ -232,6 +237,7 @@ body > div {
 }
 
 .card .navigation-link-to-cowin {
+  cursor: pointer;
   font-weight: 600;
   font-size: 16px;
   background: #5eba7d;
@@ -393,3 +399,56 @@ footer.scrolled p {
   background-clip: content-box;
 }
 /* SCROLL BAR CSS ENDS*/
+
+/* TOAST SNACKBAR CSS STARTS*/
+#snackbar {
+  visibility: hidden;    
+  position: fixed;
+  z-index: 1;
+  bottom: 35px;
+  display: flex;
+  width: 80%;
+  text-align: center;
+  border-radius: 2px;
+  font-size: 17px;
+  transform: translateX(12%);
+  margin: 0 auto;
+
+}
+
+#snackbar p{
+  background-color: #333;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 20px;
+  margin: 10px auto;
+  opacity: 0.95;
+  border-radius: 20px;
+}
+
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+/* TOAST SNACKBAR CSS ENDS*/

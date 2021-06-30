@@ -92,6 +92,24 @@ $(document).ready(function () {
     callApi();
   }, 4000);  
 
+  $(document).on('click','.card .details, .card .book-fast, .card .navigation-link-to-cowin',function(){
+    window.open('https://selfregistration.cowin.gov.in/', '_blank');
+  });
+
+  $(document).on('click','.copy-to-clipboard',function(){
+    const el = document.createElement('textarea');
+    el.value = $(this).closest('.card')[0].innerText;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    $("#snackbar").addClass("show");
+    $("#snackbar p").text("Text has been copied to clipboard!");
+    setTimeout(function () {
+      $("#snackbar").removeClass("show");
+    }, 3000);
+  });
+
   $('.filter').on("click", function (e) {
     e.preventDefault();
     if ($(this).hasClass("selected"))
@@ -402,11 +420,13 @@ $(document).ready(function () {
         availablePincodes.push(item.pincode.toString());
         for (let session of item.sessions) {
           counter++;
-          var htmlCard = "<a class='card' href='https://selfregistration.cowin.gov.in/' target='_blank''>";
+          var htmlCard = "<div class='card'>";
           htmlCard +=
             "<div class='heading'><div class='name sub-heading'>" +
             item.name +
             "</div>";
+          htmlCard +=
+          "<div class='sub-heading copy-to-clipboard'><img src='images/clipboard.png' title='Copy to clipboard' alt='Copy to clipboard'/></div>";
           htmlCard +=
             "<div class='sub-heading'><div class='dot'></div></div></div>";
           htmlCard += "<div class='details'>";
@@ -446,7 +466,7 @@ $(document).ready(function () {
               htmlCard += "<div class='book-fast'>Book Now! "+ session.available_capacity+ " available!</div>";
             htmlCard += "<div class='navigation-link-to-cowin'>GO TO COWIN WEBSITE</div>";
           }
-          htmlCard += "</a>";
+          htmlCard += "</div>";
           html = html + htmlCard;
         }
       }
