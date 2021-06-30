@@ -32,8 +32,8 @@ $(document).ready(function () {
 
   if(!localStorage.getItem('nage18'))
     localStorage.setItem('nage18', true);
-  if(!localStorage.getItem('nage30'))
-    localStorage.setItem('nage30', true);
+  // if(!localStorage.getItem('nage30'))
+  //   localStorage.setItem('nage30', true);
   if(!localStorage.getItem('nage45'))
     localStorage.setItem('nage45', true);
   if(!localStorage.getItem('ndose1'))
@@ -45,7 +45,7 @@ $(document).ready(function () {
   var lastOpenedDistrict = localStorage.getItem('lastOpenedDistrict');
   var viewOnlyAvailable = localStorage.getItem('viewOnlyAvailable') == 'true' ? true : false;
   var nage18 = localStorage.getItem('nage18') == 'true' ? true : false;
-  var nage30 = localStorage.getItem('nage30') == 'true' ? true : false;
+  // var nage30 = localStorage.getItem('nage30') == 'true' ? true : false;
   var nage45 = localStorage.getItem('nage45') == 'true' ? true : false;
   var ndose1 = localStorage.getItem('ndose1') == 'true' ? true : false;
   var ndose2 = localStorage.getItem('ndose2') == 'true' ? true : false;
@@ -54,7 +54,7 @@ $(document).ready(function () {
 
   $("#viewOnlyAvailable").prop("checked", viewOnlyAvailable);
   $("#nage18").prop("checked", nage18);
-  $("#nage30").prop("checked", nage30);
+  // $("#nage30").prop("checked", nage30);
   $("#nage45").prop("checked", nage45);
   $("#ndose1").prop("checked", ndose1);
   $("#ndose2").prop("checked", ndose2);
@@ -128,9 +128,9 @@ $(document).ready(function () {
       case 'nage18':
         nage18 = localStorage.getItem('nage18') == 'true' ? true : false;
         break;
-      case 'nage30':
-        nage30 = localStorage.getItem('nage30') == 'true' ? true : false;
-        break;
+      // case 'nage30':
+      //   nage30 = localStorage.getItem('nage30') == 'true' ? true : false;
+      //   break;
       case 'nage45':
         nage45 = localStorage.getItem('nage45') == 'true' ? true : false;
         break;
@@ -271,7 +271,7 @@ $(document).ready(function () {
       feesFlag = false;
     if (
       $("#filter_18plus").hasClass("selected") ||
-      $("#filter_30plus").hasClass("selected") ||
+      // $("#filter_30plus").hasClass("selected") ||
       $("#filter_45plus").hasClass("selected")
     )
       ageFlag = false;
@@ -319,21 +319,21 @@ $(document).ready(function () {
         if ($(this).find('.min-age-limit span').text() == '18') ageFlag = true;
         else ageFlag = false;
       }
-      if ($("#filter_30plus").hasClass("selected")) {
-        if ($(this).find('.min-age-limit span').text() == '30') ageFlag = true;
-        else ageFlag = false;
-      }
+      // if ($("#filter_30plus").hasClass("selected")) {
+      //   if ($(this).find('.min-age-limit span').text() == '30') ageFlag = true;
+      //   else ageFlag = false;
+      // }
       if ($("#filter_45plus").hasClass("selected")) {
         if ($(this).find('.min-age-limit span').text() == '45') ageFlag = true;
         else ageFlag = false;
       }
-      if (
-        $("#filter_18plus").hasClass("selected") &&
-        $("#filter_30plus").hasClass("selected")
-      ) {
-        if ($(this).find('.min-age-limit span').text() == '18' || $(this).find('.min-age-limit span').text() == '30') ageFlag = true;
-        else ageFlag = false;
-      }
+      // if (
+      //   $("#filter_18plus").hasClass("selected") &&
+      //   $("#filter_30plus").hasClass("selected")
+      // ) {
+      //   if ($(this).find('.min-age-limit span').text() == '18' || $(this).find('.min-age-limit span').text() == '30') ageFlag = true;
+      //   else ageFlag = false;
+      // }
       if (
         $("#filter_18plus").hasClass("selected") &&
         $("#filter_45plus").hasClass("selected")
@@ -341,21 +341,21 @@ $(document).ready(function () {
         if ($(this).find('.min-age-limit span').text() == '18' || $(this).find('.min-age-limit span').text() == '45') ageFlag = true;
         else ageFlag = false;
       }
-      if (
-        $("#filter_30plus").hasClass("selected") &&
-        $("#filter_45plus").hasClass("selected")
-      ) {
-        if ($(this).find('.min-age-limit span').text() == '30' || $(this).find('.min-age-limit span').text() == '45') ageFlag = true;
-        else ageFlag = false;
-      }
-      if (
-        $("#filter_18plus").hasClass("selected") &&
-        $("#filter_30plus").hasClass("selected") &&
-        $("#filter_45plus").hasClass("selected")
-      ) {
-        if ($(this).find('.min-age-limit span').text() == '18' || $(this).find('.min-age-limit span').text() == '30' || $(this).find('.min-age-limit span').text() == '45') ageFlag = true;
-        else ageFlag = false;
-      }
+      // if (
+      //   $("#filter_30plus").hasClass("selected") &&
+      //   $("#filter_45plus").hasClass("selected")
+      // ) {
+      //   if ($(this).find('.min-age-limit span').text() == '30' || $(this).find('.min-age-limit span').text() == '45') ageFlag = true;
+      //   else ageFlag = false;
+      // }
+      // if (
+      //   $("#filter_18plus").hasClass("selected") &&
+      //   $("#filter_30plus").hasClass("selected") &&
+      //   $("#filter_45plus").hasClass("selected")
+      // ) {
+      //   if ($(this).find('.min-age-limit span').text() == '18' || $(this).find('.min-age-limit span').text() == '30' || $(this).find('.min-age-limit span').text() == '45') ageFlag = true;
+      //   else ageFlag = false;
+      // }
 
       if ($("#filter_free").hasClass("selected")) {
         if ($(this).find('.fee-type span').text() == 'Free') feesFlag = true;
@@ -475,7 +475,7 @@ $(document).ready(function () {
       return;
     
     $(".card").each(function () {
-      if(!(ndose1 || ndose2 || nage18 || nage30 || nage45)) {
+      if(!(ndose1 || ndose2 || nage18 || nage45)) {
         notificationsGiven = [];
         return;
       }
@@ -492,9 +492,9 @@ $(document).ready(function () {
         if(nage18 && $(this).find('.min-age-limit span').text() == 18){
           ageFlag = true;
         }
-        if(nage30 && $(this).find('.min-age-limit span').text() == 30){
-          ageFlag = true;
-        }
+        // if(nage30 && $(this).find('.min-age-limit span').text() == 30){
+        //   ageFlag = true;
+        // }
         if(nage45 && $(this).find('.min-age-limit span').text() == 45){
           ageFlag = true;
         }
